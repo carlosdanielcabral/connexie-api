@@ -1,0 +1,19 @@
+services:
+  database:
+    image: mysql:8.4
+    container_name: divulga-brasil-database
+    env_file: .env
+    volumes:
+      - /app/database
+    ports:
+      - 3306:3306
+
+  api:
+    build: ./
+    container_name: divulga-brasil-api
+    depends_on:
+      - database
+    volumes:
+      - ./:/app/backend
+    ports:
+      - 3001:3001

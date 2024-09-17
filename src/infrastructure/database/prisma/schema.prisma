@@ -1,0 +1,40 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model ServiceProvider {
+  @@map("service_provider")
+
+  id                String   @id @db.Char(36)
+  name              String   @db.VarChar(255)
+  email             String   @unique @db.VarChar(255)
+  password          String   @db.VarChar(255)
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  serviceProviderContact ServiceProviderContact[]
+}
+
+model ServiceProviderContact {
+  @@map("service_provider_contact")
+
+  id        Int   @id @default(autoincrement())
+  serviceProvider ServiceProvider  @relation(fields: [serviceProviderId], references: [id])
+  serviceProviderId String @db.Char(36) @map("service_provider_id")
+  email     String   @unique @db.VarChar(255)
+  phone     String   @db.VarChar(255)
+  cellphone String   @db.VarChar(16)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
