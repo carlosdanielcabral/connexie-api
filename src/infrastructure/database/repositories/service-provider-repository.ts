@@ -1,25 +1,29 @@
 import { PrismaClient } from '@prisma/client';
-import { ServiceProvider } from '../../../domain/entities/service-provider';
+import ServiceProvider from '../../../domain/entities/service-provider';
 import IServiceProviderRepository from '../../../interfaces/repositories/service-provider-repository';
 
 class ServiceProviderRepository implements IServiceProviderRepository {
  constructor(private prisma: PrismaClient = new PrismaClient()) {}
 
-  async create(serviceProvider: ServiceProvider): Promise<ServiceProvider> {
-    return this.prisma.serviceProvider.create({
+  public create = async (serviceProvider: ServiceProvider): Promise<ServiceProvider> => {
+    const contacts = serviceProvider.contacts.map((contact) => contact.toJson());
+
+    await this.prisma.serviceProvider.create({
+      include: {
+        contact: true,
+      },
       data: {
+        id: serviceProvider.id,
         name: serviceProvider.name,
         email: serviceProvider.email,
         password: serviceProvider.password,
         contact: {
-          create: {
-            email: serviceProvider.contact.email,
-            phone: serviceProvider.contact.phone,
-            region: serviceProvider.contact.region,
-          },
+          create: contacts,
         },
       },
     });
+
+    return serviceProvider;
   }
 }
 

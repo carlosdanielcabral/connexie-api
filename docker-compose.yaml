@@ -11,9 +11,14 @@ services:
   api:
     build: ./
     container_name: divulga-brasil-api
+    env_file: .env
+    environment:
+      - DATABASE_URL=mysql://root:root@database:3306/divulga_brasil
+
     depends_on:
       - database
     volumes:
       - ./:/app/backend
+      - /app/backend/node_modules
     ports:
       - 3001:3001
