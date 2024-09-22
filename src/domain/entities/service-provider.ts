@@ -6,7 +6,7 @@ class ServiceProvider {
       public name: string,
       public email: string,
       public password: string,
-      public contact: ServiceProviderContact[]
+      public contacts: ServiceProviderContact[]
     ) {
     }
 
@@ -14,7 +14,7 @@ class ServiceProvider {
       id: this.id,
       name: this.name,
       email: this.email,
-      contact: this.contact.map(contact => contact.toJson())
+      contact: this.contacts.map(contact => contact.toJson())
     })
   }
   

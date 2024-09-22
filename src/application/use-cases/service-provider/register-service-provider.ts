@@ -4,6 +4,7 @@ import ServiceProviderContact from '../../../domain/entities/service-provider-co
 import IServiceProviderRepository from '../../../interfaces/repositories/service-provider-repository';
 import RegisterServiceProviderDTO from '../../dtos/service-provider/register-service-provider';
 import ICryptService from '../../../interfaces/services/crypt-service';
+import ValidationError from '../../errors/validation-error';
 
 class RegisterServiceProvider {
   constructor(
@@ -12,7 +13,7 @@ class RegisterServiceProvider {
   ) {}
 
   public execute = async (dto: RegisterServiceProviderDTO): Promise<ServiceProvider> => {
-    const { name, email, password, contacts } = dto;
+    const { id, name, email, password, contacts } = dto;
   
     const serviceProviderContacts = contacts.map(contact => new ServiceProviderContact(
       contact.email,
@@ -22,7 +23,11 @@ class RegisterServiceProvider {
 
     const encryptedPassword = this._cryptService.encrypt(password);
   
-    const serviceProvider = new ServiceProvider(randomUUID(), name, email, encryptedPassword, serviceProviderContacts);
+    const serviceProvider = new ServiceProvider(id, name, email, encryptedPassword, serviceProviderContacts);
+
+    const previousServiceProvider = await this._serviceProviderRepository.findByEmail(email);
+
+    if (previousServiceProvider) throw new ValidationError('This email is already in use');
 
     return this._serviceProviderRepository.create(serviceProvider);
   };

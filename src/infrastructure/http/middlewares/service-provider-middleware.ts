@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express"
 import { z } from "zod";
 import RegisterServiceProviderDTO from "../../../application/dtos/service-provider/register-service-provider";
 import RegisterServiceProviderContactDTO from "../../../application/dtos/service-provider/register-service-provider-contact";
+import { randomUUID } from "crypto";
 
 class ServiceProviderMiddleware {
   public create = (req: Request, res: Response, next: NextFunction) => {
@@ -17,6 +18,7 @@ class ServiceProviderMiddleware {
     }).parse(req.body);
 
     req.body.dto = new RegisterServiceProviderDTO(
+        randomUUID(),
         req.body.name,
         req.body.email,
         req.body.password,
