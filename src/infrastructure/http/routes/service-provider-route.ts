@@ -12,6 +12,7 @@ class ServiceProviderRoute implements Route {
 
     public register = (app: Express) => {
         app.post('/service-provider', this._middleware.create, this._controller.create);
+        app.post('/service-provider/login', this._middleware.login, this._controller.login);
     }
 }
 

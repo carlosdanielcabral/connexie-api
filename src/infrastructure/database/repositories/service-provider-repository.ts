@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import ServiceProvider from '../../../domain/entities/service-provider';
 import IServiceProviderRepository from '../../../interfaces/repositories/service-provider-repository';
+import ServiceProviderContact from '../../../domain/entities/service-provider-contact';
 
 class ServiceProviderRepository implements IServiceProviderRepository {
  constructor(private prisma: PrismaClient = new PrismaClient()) {}
@@ -24,6 +25,27 @@ class ServiceProviderRepository implements IServiceProviderRepository {
     });
 
     return serviceProvider;
+  }
+
+  public findByEmail = async (email: string): Promise<ServiceProvider | null> => {
+    const serviceProvider = await this.prisma.serviceProvider.findUnique({
+      where: { email },
+      include: { contact: true },
+    });
+
+    if (!serviceProvider) return null;
+
+    return new ServiceProvider(
+      serviceProvider.id,
+      serviceProvider.name,
+      serviceProvider.email,
+      serviceProvider.password,
+      serviceProvider.contact.map((contact) => new ServiceProviderContact(
+        contact.email,
+        contact.phone,
+        contact.cellphone,
+      )),
+    );
   }
 }
 

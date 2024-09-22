@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { ZodError } from 'zod';
 import HttpStatusCode from '../status-code';
+import ValidationError from '../../../application/errors/validation-error';
 
 export interface ErrorHandler extends Error {
   status?: number;
@@ -14,8 +15,8 @@ const ErrorMiddleware = (err: ErrorHandler, _req: Request, res: Response, _next:
   if (err instanceof ZodError)
     return res.status(HttpStatusCode.BadRequest).json({ message: err.message });
 
-//  if (err instanceof HttpError)
- //   return res.status(err.status).json({ message: err.message });
+  if (err instanceof ValidationError)
+    return res.status(HttpStatusCode.BadRequest).json({ message: err.message });
 
   console.error(err);
 
