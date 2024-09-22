@@ -22,6 +22,7 @@ class ServiceProviderMiddleware {
         req.body.name,
         req.body.email,
         req.body.password,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         req.body.contacts.map((contact: any) => new RegisterServiceProviderContactDTO(
             contact.email,
             contact.phone,

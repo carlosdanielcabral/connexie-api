@@ -1,9 +1,7 @@
 
 import { PrismaClient } from "@prisma/client";
 import Sinon from "sinon";
-import request from "supertest";
 import ServiceProviderRepository from "./service-provider-repository";
-import { create } from "domain";
 import ServiceProvider from "../../../domain/entities/service-provider";
 import ServiceProviderContact from "../../../domain/entities/service-provider-contact";
 

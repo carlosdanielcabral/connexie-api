@@ -8,6 +8,7 @@ export interface ErrorHandler extends Error {
   status?: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ErrorMiddleware = (err: ErrorHandler, _req: Request, res: Response, _next: NextFunction) => {
   if (err instanceof JsonWebTokenError)
     return res.status(HttpStatusCode.Unauthorized).json({ message: err.message });
