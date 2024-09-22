@@ -6,7 +6,8 @@
     "start": "ts-node-dev ./src/infrastructure/http/server.ts",
     "lint": "eslint ./src/",
     "lint:fix": "eslint ./src/ --fix",
-    "test": "jest --watchAll --collectCoverage"
+    "test:dev": "jest --watchAll --collectCoverage",
+    "test": "jest --coverage"
   },
   "prisma": {
     "schema": "./src/infrastructure/database/prisma/schema.prisma"
