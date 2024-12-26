@@ -1,5 +1,5 @@
 {
-  "name": "divulgabrasil",
+  "name": "connexie",
   "version": "1.0.0",
   "scripts": {
     "prestart": "prisma generate && npm install",
