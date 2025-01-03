@@ -49,6 +49,25 @@ class ServiceProviderRepository implements IServiceProviderRepository {
       serviceProvider.description,
     );
   }
+
+  public list = async (): Promise<ServiceProvider[]> => {
+    const serviceProviders = await this.prisma.serviceProvider.findMany({
+      include: { contact: true },
+    });
+
+    return serviceProviders.map((serviceProvider) => new ServiceProvider(
+      serviceProvider.id,
+      serviceProvider.name,
+      serviceProvider.email,
+      serviceProvider.password,
+      serviceProvider.contact.map((contact) => new ServiceProviderContact(
+        contact.email,
+        contact.phone,
+        contact.cellphone,
+      )),
+      serviceProvider.description,
+    ));
+  }
 }
 
 export default ServiceProviderRepository;

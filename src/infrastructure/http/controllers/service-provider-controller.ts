@@ -36,6 +36,12 @@ class ServiceProviderController {
 
         return res.status(HttpStatusCode.Ok).json({ token, provider });
     }
+
+    public list = async (req: Request, res: Response) => {
+        const providers = await this._repository.list();
+
+        return res.status(HttpStatusCode.Ok).json({ providers: providers.map((provider) => provider.toJson()) });
+    }
 }
 
 export default ServiceProviderController;
