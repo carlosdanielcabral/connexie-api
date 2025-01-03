@@ -12,7 +12,7 @@ class RegisterServiceProvider {
   ) {}
 
   public execute = async (dto: RegisterServiceProviderDTO): Promise<ServiceProvider> => {
-    const { id, name, email, password, contacts } = dto;
+    const { id, name, email, password, contacts, description } = dto;
   
     const serviceProviderContacts = contacts.map(contact => new ServiceProviderContact(
       contact.email,
@@ -22,7 +22,7 @@ class RegisterServiceProvider {
 
     const encryptedPassword = this._cryptService.encrypt(password);
   
-    const serviceProvider = new ServiceProvider(id, name, email, encryptedPassword, serviceProviderContacts);
+    const serviceProvider = new ServiceProvider(id, name, email, encryptedPassword, serviceProviderContacts, description);
 
     const previousServiceProvider = await this._serviceProviderRepository.findByEmail(email);
 

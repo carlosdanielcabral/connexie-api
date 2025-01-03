@@ -7,7 +7,8 @@ class RegisterServiceProviderDTO {
     public name: string,
     public email: string,
     public password: string,
-    public contacts: RegisterServiceProviderContactDTO[]
+    public contacts: RegisterServiceProviderContactDTO[],
+    public description: string,
   ) {}
 }
 

@@ -10,7 +10,7 @@ import LoginServiceProvider from "./login-service-provider";
 describe("[Use Case] Login Service Provider", () => {
     const serviceProviderExpected = new ServiceProvider('test-id', 'Test Name', 'test@email.com', 'test-password', [
         new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone'),
-    ]);
+    ], 'Test description');
 
     const prisma = new PrismaClient();
     const repository = new ServiceProviderRepository(prisma);

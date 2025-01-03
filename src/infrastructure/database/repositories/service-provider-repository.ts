@@ -21,6 +21,7 @@ class ServiceProviderRepository implements IServiceProviderRepository {
         contact: {
           create: contacts,
         },
+        description: serviceProvider.description,
       },
     });
 
@@ -45,6 +46,7 @@ class ServiceProviderRepository implements IServiceProviderRepository {
         contact.phone,
         contact.cellphone,
       )),
+      serviceProvider.description,
     );
   }
 }

@@ -12,11 +12,11 @@ import CryptService from "../../../infrastructure/services/crypt-service";
 describe("[Use Case] Register Service Provider", () => {
     const serviceProviderExpected = new ServiceProvider('test-id', 'Test Name', 'test@email.com', 'test-password', [
         new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone'),
-    ]);
+    ], 'Test description');
 
     const dto = new RegisterServiceProviderDTO('test-id', 'Test Name', 'test@email.com', 'test-password', [
         new RegisterServiceProviderContactDTO('test-email', 'test-phone', 'test-cellphone'),
-    ]);
+    ], 'Test description');
 
     const prisma = new PrismaClient();
     const repository = new ServiceProviderRepository(prisma);

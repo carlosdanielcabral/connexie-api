@@ -15,6 +15,7 @@ class ServiceProviderMiddleware {
             phone: z.string(),
             cellphone: z.string(),
         })),
+        description: z.string(),
     }).parse(req.body);
 
     req.body.dto = new RegisterServiceProviderDTO(
@@ -27,7 +28,8 @@ class ServiceProviderMiddleware {
             contact.email,
             contact.phone,
             contact.cellphone
-        ))
+        )),
+        req.body.description,
     )
 
     return next();

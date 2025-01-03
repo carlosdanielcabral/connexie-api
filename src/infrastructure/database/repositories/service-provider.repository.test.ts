@@ -8,7 +8,7 @@ import ServiceProviderContact from "../../../domain/entities/service-provider-co
 describe("[Repository] Service Provider", () => {
     const serviceProviderMock = new ServiceProvider('test-id', 'Test Name', 'test@email.com', 'test-password', [
         new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone'),
-    ]);
+    ], 'Test description');
 
     const prisma = new PrismaClient();
 
@@ -27,6 +27,7 @@ describe("[Repository] Service Provider", () => {
                             cellphone: serviceProviderMock.contacts[0].cellphone,
                         },
                     ],
+                    description: serviceProviderMock.description,
                 }),
             });
 
@@ -69,6 +70,7 @@ describe("[Repository] Service Provider", () => {
                             cellphone: serviceProviderMock.contacts[0].cellphone,
                         },
                     ],
+                    description: serviceProviderMock.description,
                 }),
             });
 
