@@ -96,6 +96,12 @@ enum HttpStatusCode {
      * an unexpected condition that prevented it from fulfilling the request.
      */
     InternalServerError = 500,
+
+    /**
+     * The 502 (Bad Gateway) status code indicates that the server, while acting as a
+     * gateway or proxy, received an invalid response from an inbound server it accessed while attempting to fulfill the request.
+     */
+    BadGateway = 502,
   }
   
   export default HttpStatusCode;
