@@ -13,8 +13,8 @@ class AzureBlobStorageAdapter implements FileStorage {
         this.client = client.getContainerClient(process.env.AZURE_STORAGE_CONTAINER_NAME as string);
     }
 
-    public uploadFile = async (filename: string, content: Buffer): Promise<boolean> => {
-        const client = this.client.getBlockBlobClient(filename);
+    public uploadFile = async (blobName: string, content: Buffer): Promise<boolean> => {
+        const client = this.client.getBlockBlobClient(blobName);
         
         const response = await client.upload(content, content.length);
 
