@@ -1,11 +1,12 @@
 
 import { BlobServiceClient, BlockBlobClient, BlockBlobUploadResponse, ContainerClient } from "@azure/storage-blob";
 import Sinon, { SinonStubbedInstance } from "sinon";
-import AzureBlobStorageAdapter from "./azure-blob-storage-adapter";
 import ExternalServiceError from "../../application/errors/external-service-error";
+import AzureBlobStorageAdapter from "../storage/azure-blob-storage-adapter";
+import FileService from "./file-service";
 
-describe("[Storage] Azure Blob Storage Adapter", () => {
-    describe("01. Upload", () => {
+describe("[Service] File Service", () => {
+    describe("01. Save", () => {
         let blobClient: SinonStubbedInstance<BlobServiceClient>;
         let containerClient: SinonStubbedInstance<ContainerClient>;
         let blockClient: SinonStubbedInstance<BlockBlobClient>
@@ -26,7 +27,7 @@ describe("[Storage] Azure Blob Storage Adapter", () => {
             blobClient.getContainerClient.restore();
         });
 
-        test("Return 'true' after success insertion", async () => {
+        test("Return generated blob name after success insertion", async () => {
             const successfullResponse = new Promise<BlockBlobUploadResponse>((resolve) => {
                 resolve({
                     _response: {
@@ -39,11 +40,19 @@ describe("[Storage] Azure Blob Storage Adapter", () => {
             containerClient.getBlockBlobClient.returns(blockClient);
             blobClient.getContainerClient.returns(containerClient);
 
-            const adapter = new AzureBlobStorageAdapter(blobClient);
+            const storage = new AzureBlobStorageAdapter(blobClient);
 
-            const response = await adapter.uploadFile('test-filename', new Buffer('test'));
+            sandbox.stub(storage, 'uploadFile').returns(new Promise((resolve) => resolve(true)));
 
-            expect(response).toBe(true);
+            const fileService = new FileService(storage);
+
+            const blobName = 'test-filename_date';
+
+            sandbox.stub(fileService, 'generateBlobName').returns(blobName);
+
+            const response = await fileService.save('test-filename', new Buffer('test'));
+
+            expect(response).toBe(blobName);
         });
 
         test("Throw an exception after failed insertion", async () => {
@@ -59,10 +68,14 @@ describe("[Storage] Azure Blob Storage Adapter", () => {
             containerClient.getBlockBlobClient.returns(blockClient);
             blobClient.getContainerClient.returns(containerClient);
 
-            const adapter = new AzureBlobStorageAdapter(blobClient);
+            const storage = new AzureBlobStorageAdapter(blobClient);
+
+            sandbox.stub(storage, 'uploadFile').throws(new ExternalServiceError('An error ocurred'));
+
+            const fileService = new FileService(storage);
 
             try {
-                await adapter.uploadFile('test-filename', Buffer.from('test'));
+                await fileService.save('test-filename', new Buffer('test'));
             } catch (error) {
                 expect(error).toBeInstanceOf(ExternalServiceError);
             }
