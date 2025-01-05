@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import ServiceProvider from '../../../domain/entities/service-provider';
 import IServiceProviderRepository from '../../../interfaces/repositories/service-provider-repository';
 import ServiceProviderContact from '../../../domain/entities/service-provider-contact';
+import File from '../../../domain/entities/file';
 
 class ServiceProviderRepository implements IServiceProviderRepository {
  constructor(private prisma: PrismaClient = new PrismaClient()) {}
@@ -22,6 +23,9 @@ class ServiceProviderRepository implements IServiceProviderRepository {
           create: contacts,
         },
         description: serviceProvider.description,
+        profileImage: {
+          create: serviceProvider.profileImage?.toSimpleJson(),
+        }
       },
     });
 
@@ -31,7 +35,7 @@ class ServiceProviderRepository implements IServiceProviderRepository {
   public findByEmail = async (email: string): Promise<ServiceProvider | null> => {
     const serviceProvider = await this.prisma.serviceProvider.findUnique({
       where: { email },
-      include: { contact: true },
+      include: { contact: true, profileImage: true },
     });
 
     if (!serviceProvider) return null;
@@ -47,12 +51,20 @@ class ServiceProviderRepository implements IServiceProviderRepository {
         contact.cellphone,
       )),
       serviceProvider.description,
+      !serviceProvider.profileImage ? null : new File(
+        serviceProvider.profileImage.originalName,
+        serviceProvider.profileImage.encoding,
+        serviceProvider.profileImage.mimeType,
+        serviceProvider.profileImage.blobName,
+        serviceProvider.profileImage.size,
+        serviceProvider.profileImage.id,
+      ),
     );
   }
 
   public list = async (): Promise<ServiceProvider[]> => {
     const serviceProviders = await this.prisma.serviceProvider.findMany({
-      include: { contact: true },
+      include: { contact: true, profileImage: true },
     });
 
     return serviceProviders.map((serviceProvider) => new ServiceProvider(
@@ -66,6 +78,14 @@ class ServiceProviderRepository implements IServiceProviderRepository {
         contact.cellphone,
       )),
       serviceProvider.description,
+      !serviceProvider.profileImage ? null : new File(
+        serviceProvider.profileImage.originalName,
+        serviceProvider.profileImage.encoding,
+        serviceProvider.profileImage.mimeType,
+        serviceProvider.profileImage.blobName,
+        serviceProvider.profileImage.size,
+        serviceProvider.profileImage.id,
+      ),
     ));
   }
 }

@@ -6,11 +6,12 @@ import ServiceProvider from "../../../domain/entities/service-provider";
 import ServiceProviderContact from "../../../domain/entities/service-provider-contact";
 import CryptService from "../../../infrastructure/services/crypt-service";
 import LoginServiceProvider from "./login-service-provider";
+import File from "../../../domain/entities/file";
 
 describe("[Use Case] Login Service Provider", () => {
     const serviceProviderExpected = new ServiceProvider('test-id', 'Test Name', 'test@email.com', 'test-password', [
         new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone'),
-    ], 'Test description');
+    ], 'Test description', new File('original-name', 'encoding', 'mimeType', 'blobName', 1));
 
     const prisma = new PrismaClient();
     const repository = new ServiceProviderRepository(prisma);

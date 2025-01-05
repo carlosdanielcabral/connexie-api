@@ -1,3 +1,4 @@
+import File from "./file";
 import ServiceProviderContact from "./service-provider-contact";
 
 class ServiceProvider {
@@ -8,6 +9,7 @@ class ServiceProvider {
       public password: string,
       public contacts: ServiceProviderContact[],
       public description: string,
+      public profileImage: File | null,
     ) {
     }
 
@@ -17,6 +19,7 @@ class ServiceProvider {
       email: this.email,
       contact: this.contacts.map(contact => contact.toJson()),
       description: this.description,
+      image: this.profileImage?.blobName,
     })
   }
   

@@ -6,18 +6,20 @@ import ServiceProviderRepository from "../../database/repositories/service-provi
 import CryptService from "../../services/crypt-service";
 import LoginServiceProvider from "../../../application/use-cases/service-provider/login-service-provider";
 import TokenService from "../../services/token-service";
+import FileService from "../../services/file-service";
 
 class ServiceProviderController {
     constructor(
         private readonly _repository: ServiceProviderRepository = new ServiceProviderRepository(),
         private readonly _cryptService: CryptService = new CryptService(),
         private readonly _tokenService: TokenService = new TokenService(),
+        private readonly _fileService: FileService = new FileService(),
     ) {}
 
     public create = async (req: Request, res: Response) => {
         const dto: RegisterServiceProviderDTO = req.body.dto;
 
-        const useCase = new RegisterServiceProvider(this._repository, this._cryptService);
+        const useCase = new RegisterServiceProvider(this._repository, this._cryptService, this._fileService);
         const provider = await useCase.execute(dto);
 
         return res

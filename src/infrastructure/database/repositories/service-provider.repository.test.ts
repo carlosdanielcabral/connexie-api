@@ -4,11 +4,12 @@ import Sinon from "sinon";
 import ServiceProviderRepository from "./service-provider-repository";
 import ServiceProvider from "../../../domain/entities/service-provider";
 import ServiceProviderContact from "../../../domain/entities/service-provider-contact";
+import File from "../../../domain/entities/file";
 
 describe("[Repository] Service Provider", () => {
     const serviceProviderMock = new ServiceProvider('test-id', 'Test Name', 'test@email.com', 'test-password', [
         new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone'),
-    ], 'Test description');
+    ], 'Test description', new File('original-name', 'encoding', 'mimeType', 'blobName', 1));
 
     const prisma = new PrismaClient();
 
@@ -71,6 +72,13 @@ describe("[Repository] Service Provider", () => {
                         },
                     ],
                     description: serviceProviderMock.description,
+                    profileImage: {
+                        originalName: 'original-name',
+                        encoding: 'encoding',
+                        mimeType: 'mimeType',
+                        blobName: 'blobName',
+                        size: 1
+                    }
                 }),
             });
 

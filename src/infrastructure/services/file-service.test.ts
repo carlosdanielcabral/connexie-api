@@ -46,9 +46,7 @@ describe("[Service] File Service", () => {
 
             const fileService = new FileService(storage);
 
-            const blobName = 'test-filename_date';
-
-            sandbox.stub(fileService, 'generateBlobName').returns(blobName);
+            const blobName = 'test-filename';
 
             const response = await fileService.save('test-filename', new Buffer('test'));
 

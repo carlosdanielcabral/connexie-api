@@ -1,26 +1,19 @@
+import { randomUUID } from "crypto";
 import FileStorage from "../../interfaces/storage/file-storage";
 import AzureBlobStorageAdapter from "../storage/azure-blob-storage-adapter";
+import sharp from "sharp";
 
 class FileService {
   constructor(private storage: FileStorage = new AzureBlobStorageAdapter()) {}
 
   public save = async (filename: string, content: Buffer): Promise<string> => {
-    const blobName = this.generateBlobName(filename);
+    await this.storage.uploadFile(filename, await this.compress(content));
 
-    await this.storage.uploadFile(blobName, content);
-
-    return blobName;
+    return filename;
   }
 
-  public generateBlobName = (filename: string): string => {
-    const normalizedName = filename.toLowerCase()
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9\s]/g, "")
-      .trim()
-      .replace(/\s+/g, "_");
-
-    return `${normalizedName}_${new Date().getTime()}`; 
+  private compress = async (content: Buffer): Promise<Buffer> => {
+    return sharp(content).webp().toBuffer();
   }
 }
 
