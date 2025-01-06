@@ -10,7 +10,6 @@ import fs from 'fs/promises';
 import FileRepository from "../../../infrastructure/database/repositories/file-repository";
 import RegisterFileDTO from "../../dtos/file/register-file";
 import RegisterFile from "./register-file";
-import sharp from "sharp";
 import CryptService from "../../../infrastructure/services/crypt-service";
 
 describe("[Use Case] Register File", () => {
@@ -28,7 +27,6 @@ describe("[Use Case] Register File", () => {
 
     let storageAdapater: AzureBlobStorageAdapter;
     let fileService: FileService;
-    let registerFile: RegisterFile;
 
     const sandbox = Sinon.createSandbox();
 

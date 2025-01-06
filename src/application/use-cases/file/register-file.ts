@@ -1,4 +1,3 @@
-import ServiceProvider from '../../../domain/entities/service-provider';
 import File from '../../../domain/entities/file';
 import fs from 'fs/promises';
 import RegisterFileDTO from '../../dtos/file/register-file';

@@ -18,8 +18,6 @@ describe("[Service] Token Service", () => {
         test("Return false if token is invalid", async () => {
             const tokenService = new TokenService();
 
-            const payload = { name: 'Test' };
-
             const token = 'ey879dan879a87987987D987';
 
             try {
