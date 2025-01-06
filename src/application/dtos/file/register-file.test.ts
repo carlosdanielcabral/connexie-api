@@ -29,8 +29,6 @@ describe("[Use Case] Register File", () => {
     let fileService: FileService;
     let registerFile: RegisterFile;
 
-    const fileRepository = new FileRepository(prisma);
-
     const sandbox = Sinon.createSandbox();
 
     beforeEach(() => {
@@ -71,7 +69,7 @@ describe("[Use Case] Register File", () => {
     test("Return file after success insertion", async () => {
         sandbox.stub(repository, 'create').returns(Promise.resolve(file));
 
-        const useCase = new RegisterFile(fileService, fileRepository);
+        const useCase = new RegisterFile(fileService, repository);
 
         const response = await useCase.execute(dto);
 
