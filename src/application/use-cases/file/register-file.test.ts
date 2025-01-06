@@ -13,7 +13,7 @@ import RegisterFile from "./register-file";
 import CryptService from "../../../infrastructure/services/crypt-service";
 
 describe("[Use Case] Register File", () => {
-    const file = new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', 1);
+    const file = new File('encrypted', 'encoding', 'mimeType', 'encrypted', 1, 0, 'encrypted', 1);
 
     const dto = new RegisterFileDTO('original-name', 'encoding', 'mimeType', 1, 'tempPath');
 
@@ -29,6 +29,8 @@ describe("[Use Case] Register File", () => {
     let fileService: FileService;
 
     const sandbox = Sinon.createSandbox();
+
+    const cryptService = new CryptService('3BWrUbi4bMHcHoPn5zZgvcitJRUc8wOB');
 
     beforeEach(() => {
         const successfullResponse = new Promise<BlockBlobUploadResponse>((resolve) => {
@@ -55,6 +57,7 @@ describe("[Use Case] Register File", () => {
         sandbox.stub(fileService, 'save').resolves('blobName');
         sandbox.stub(fs, 'readFile').resolves(new Buffer('test'));
         sandbox.stub(fileService, 'compress').resolves(Buffer.from('test'));
+        sandbox.stub(cryptService, 'encrypt').returns('encrypted');
     });
 
     afterEach(() => {

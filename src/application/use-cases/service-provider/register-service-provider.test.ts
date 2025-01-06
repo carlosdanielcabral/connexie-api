@@ -42,7 +42,7 @@ describe("[Use Case] Register Service Provider", () => {
     let registerFile: RegisterFile;
 
     const fileRepository = new FileRepository(prisma);
-    const cryptService = new CryptService();
+    const cryptService = new CryptService('3BWrUbi4bMHcHoPn5zZgvcitJRUc8wOB');
 
     const sandbox = Sinon.createSandbox();
 
