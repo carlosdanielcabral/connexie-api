@@ -73,7 +73,7 @@ describe("[Use Case] Register Service Provider", () => {
         sandbox.stub(fs, 'readFile').resolves(new Buffer('test'));
         sandbox.stub(cryptService, 'encrypt').returns('encrypted');
 
-        registerFile = new RegisterFile(fileRepository, fileService, new CryptService());
+        registerFile = new RegisterFile(fileRepository, fileService, cryptService);
         sandbox.stub(registerFile, 'execute').resolves(file);
     });
 

@@ -71,7 +71,7 @@ describe("[Use Case] Register File", () => {
     test("Return file after success insertion", async () => {
         sandbox.stub(repository, 'create').returns(Promise.resolve(file));
 
-        const useCase = new RegisterFile(repository, fileService, new CryptService());
+        const useCase = new RegisterFile(repository, fileService, cryptService);
 
         const response = await useCase.execute(dto);
 
