@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import ServiceProvider from '../../../domain/entities/service-provider';
-import IServiceProviderRepository from '../../../interfaces/repositories/service-provider-repository';
+import IServiceProviderRepository, { ListServiceProviderFilter } from '../../../interfaces/repositories/service-provider-repository';
 import ServiceProviderContact from '../../../domain/entities/service-provider-contact';
 import File from '../../../domain/entities/file';
 
@@ -66,9 +66,26 @@ class ServiceProviderRepository implements IServiceProviderRepository {
     );
   }
 
-  public list = async (): Promise<ServiceProvider[]> => {
+  public list = async (filter: ListServiceProviderFilter = { page: 1, limit: 10 }): Promise<ServiceProvider[]> => {
+    const prismaFilter = {
+      skip: (filter.page - 1) * filter.limit,
+      take: filter.limit,
+      where: {},
+    };
+
+    if (filter.keyword) {
+      prismaFilter.where = {
+        OR: [
+          { name: { contains: filter.keyword } },
+          { email: { contains: filter.keyword } },
+          { description: { contains: filter.keyword } },
+        ],
+      };
+    }
+
     const serviceProviders = await this.prisma.serviceProvider.findMany({
       include: { contact: true, profileImage: true },
+      ...prismaFilter,
     });
 
     return serviceProviders.map((serviceProvider) => new ServiceProvider(

@@ -44,7 +44,7 @@ describe("[Use Case] List Service Provider", () => {
 
         const useCase = new ListServiceProvider(repository);
 
-        const response = await useCase.execute();
+        const response = await useCase.execute({ page: 1, limit: 10 });
 
         expect(response).toBe(serviceProvidersExpected);
     });

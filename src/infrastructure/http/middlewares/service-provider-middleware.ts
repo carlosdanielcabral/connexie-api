@@ -3,6 +3,7 @@ import { z } from "zod";
 import RegisterServiceProviderDTO from "../../../application/dtos/service-provider/register-service-provider";
 import RegisterServiceProviderContactDTO from "../../../application/dtos/service-provider/register-service-provider-contact";
 import { randomUUID } from "crypto";
+import { ListServiceProviderFilter } from "../../../interfaces/repositories/service-provider-repository";
 
 class ServiceProviderMiddleware {
   public create = (req: Request, res: Response, next: NextFunction) => {
@@ -43,6 +44,27 @@ class ServiceProviderMiddleware {
         password: z.string(),
     }).parse(req.body);
 
+    return next();
+  }
+
+  public list = (req: Request, res: Response, next: NextFunction) => {
+    z.object({
+        keyword: z.string().optional(),
+        page: z.number().int().positive().default(1),
+        limit: z.number().int().positive().default(10),
+    }).parse(req.query);
+
+    const filter: ListServiceProviderFilter = {
+        page: Number(req.query.page ?? 1),
+        limit: Number(req.query.limit ?? 10),
+    };
+
+    if (req.query.keyword) {
+        filter.keyword = req.query.keyword.toString();
+    }
+
+    req.body = { filter };
+  
     return next();
   }
 }

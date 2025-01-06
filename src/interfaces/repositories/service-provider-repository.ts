@@ -3,7 +3,13 @@ import ServiceProvider from "../../domain/entities/service-provider";
 interface ServiceProviderRepository {
     create(serviceProvider: ServiceProvider): Promise<ServiceProvider>;
     findByEmail(email: string): Promise<ServiceProvider | null>;
-    list(): Promise<ServiceProvider[]>;
+    list(filter?: ListServiceProviderFilter): Promise<ServiceProvider[]>;
+}
+
+export type ListServiceProviderFilter ={
+    keyword?: string;
+    page: number;
+    limit: number;
 }
 
 export default ServiceProviderRepository;
