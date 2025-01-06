@@ -3,22 +3,25 @@ import RegisterServiceProvider from "../../../application/use-cases/service-prov
 import RegisterServiceProviderDTO from "../../../application/dtos/service-provider/register-service-provider";
 import HttpStatusCode from "../status-code";
 import ServiceProviderRepository from "../../database/repositories/service-provider-repository";
-import HashService from "../../services/hash-service";
 import LoginServiceProvider from "../../../application/use-cases/service-provider/login-service-provider";
-import TokenService from "../../services/token-service";
-import FileService from "../../services/file-service";
 import IFileRepository from "../../../interfaces/repositories/file-repository";
 import FileRepository from "../../database/repositories/file-repository";
 import RegisterFile from "../../../application/use-cases/file/register-file";
 import ICryptService from "../../../interfaces/services/crypt-service";
 import CryptService from "../../services/crypt-service";
+import ITokenService from "../../../interfaces/services/token-service";
+import TokenService from "../../services/token-service";
+import IFileService from "../../../interfaces/services/file-service";
+import FileService from "../../services/file-service";
+import IHashService from "../../../interfaces/services/hash-service";
+import HashService from "../../services/hash-service";
 
 class ServiceProviderController {
     constructor(
         private readonly _repository: ServiceProviderRepository = new ServiceProviderRepository(),
-        private readonly _hashService: HashService = new HashService(),
-        private readonly _tokenService: TokenService = new TokenService(),
-        private readonly _fileService: FileService = new FileService(),
+        private readonly _hashService: IHashService = new HashService(),
+        private readonly _tokenService: ITokenService = new TokenService(),
+        private readonly _fileService: IFileService = new FileService(),
         private readonly _fileRepository: IFileRepository = new FileRepository(),
         private readonly _cryptService: ICryptService = new CryptService(),
     ) {}
