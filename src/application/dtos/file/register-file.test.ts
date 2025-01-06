@@ -1,35 +1,24 @@
 
 import { PrismaClient } from "@prisma/client";
 import Sinon, { SinonStubbedInstance } from "sinon";
-import RegisterServiceProviderDTO from "../../dtos/service-provider/register-service-provider";
-import RegisterServiceProviderContactDTO from "../../dtos/service-provider/register-service-provider-contact";
-import ServiceProviderRepository from "../../../infrastructure/database/repositories/service-provider-repository";
-import ServiceProvider from "../../../domain/entities/service-provider";
-import ServiceProviderContact from "../../../domain/entities/service-provider-contact";
-import RegisterServiceProvider from "./register-service-provider";
 import CryptService from "../../../infrastructure/services/crypt-service";
 import File from "../../../domain/entities/file";
-import RegisterServiceProviderImageDTO from "../../dtos/file/register-file";
 import FileService from "../../../infrastructure/services/file-service";
 import { BlobServiceClient, BlockBlobClient, BlockBlobUploadResponse, ContainerClient } from "@azure/storage-blob";
 import AzureBlobStorageAdapter from "../../../infrastructure/storage/azure-blob-storage-adapter";
 import fs from 'fs/promises';
 import FileRepository from "../../../infrastructure/database/repositories/file-repository";
-import RegisterFile from "../file/register-file";
+import RegisterFileDTO from "../file/register-file";
+import RegisterFile from "../../use-cases/file/register-file";
+import sharp from "sharp";
 
-describe("[Use Case] Register Service Provider", () => {
+describe("[Use Case] Register File", () => {
     const file = new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', 1);
 
-    const serviceProviderExpected = new ServiceProvider('test-id', 'Test Name', 'test@email.com', 'test-password', [
-        new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone'),
-    ], 'Test description', file);
-
-    const dto = new RegisterServiceProviderDTO('test-id', 'Test Name', 'test@email.com', 'test-password', [
-        new RegisterServiceProviderContactDTO('test-email', 'test-phone', 'test-cellphone'),
-    ], 'Test description', new RegisterServiceProviderImageDTO('original-name', 'encoding', 'mimeType', 1, 'tempPath'));
+    const dto = new RegisterFileDTO('original-name', 'encoding', 'mimeType', 1, 'tempPath');
 
     const prisma = new PrismaClient();
-    const repository = new ServiceProviderRepository(prisma);
+    const repository = new FileRepository(prisma);
     const cryptService = new CryptService();
 
     let blobClient: SinonStubbedInstance<BlobServiceClient>;
@@ -65,13 +54,10 @@ describe("[Use Case] Register Service Provider", () => {
 
         fileService = new FileService(storageAdapater);
 
-        sandbox.stub(repository, 'create').returns(Promise.resolve(serviceProviderExpected));
         sandbox.stub(cryptService, 'encrypt').returns('test-id');
         sandbox.stub(fileService, 'save').resolves('blobName');
         sandbox.stub(fs, 'readFile').resolves(new Buffer('test'));
-
-        registerFile = new RegisterFile(fileService, fileRepository);
-        sandbox.stub(registerFile, 'execute').resolves(file);
+        sandbox.stub(fileService, 'compress').resolves(Buffer.from('test'));
     });
 
     afterEach(() => {
@@ -82,21 +68,13 @@ describe("[Use Case] Register Service Provider", () => {
         blobClient.getContainerClient.restore();
     });
 
-    test("Return service provider after success insertion", async () => {
-        sandbox.stub(repository, 'findByEmail').returns(Promise.resolve(null));
+    test("Return file after success insertion", async () => {
+        sandbox.stub(repository, 'create').returns(Promise.resolve(file));
 
-        const useCase = new RegisterServiceProvider(repository, cryptService, registerFile);
+        const useCase = new RegisterFile(fileService, fileRepository);
 
         const response = await useCase.execute(dto);
 
-        expect(response).toBe(serviceProviderExpected);
-    });
-
-    test("Throw error if email is already in use", async () => {
-        sandbox.stub(repository, 'findByEmail').returns(Promise.resolve(serviceProviderExpected));
-
-        const useCase = new RegisterServiceProvider(repository, cryptService, registerFile);
-
-        await expect(useCase.execute(dto)).rejects.toThrow('This email is already in use');
+        expect(response).toBe(file);
     });
 })

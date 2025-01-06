@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 
-class RegisterServiceProviderImageDTO {
+class RegisterFileDTO {
     public blobName: string;
 
     constructor(
@@ -14,4 +14,4 @@ class RegisterServiceProviderImageDTO {
     }
 }
   
-export default RegisterServiceProviderImageDTO;
+export default RegisterFileDTO;

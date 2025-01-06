@@ -24,7 +24,9 @@ class ServiceProviderRepository implements IServiceProviderRepository {
         },
         description: serviceProvider.description,
         profileImage: {
-          create: serviceProvider.profileImage?.toSimpleJson(),
+          connect: {
+            id: serviceProvider.profileImage?.id,
+          },
         }
       },
     });
@@ -56,7 +58,9 @@ class ServiceProviderRepository implements IServiceProviderRepository {
         serviceProvider.profileImage.encoding,
         serviceProvider.profileImage.mimeType,
         serviceProvider.profileImage.blobName,
-        serviceProvider.profileImage.size,
+        serviceProvider.profileImage.originalSize,
+        serviceProvider.profileImage.compressedSize,
+        serviceProvider.profileImage.url,
         serviceProvider.profileImage.id,
       ),
     );
@@ -83,7 +87,9 @@ class ServiceProviderRepository implements IServiceProviderRepository {
         serviceProvider.profileImage.encoding,
         serviceProvider.profileImage.mimeType,
         serviceProvider.profileImage.blobName,
-        serviceProvider.profileImage.size,
+        serviceProvider.profileImage.originalSize,
+        serviceProvider.profileImage.compressedSize,
+        serviceProvider.profileImage.url,
         serviceProvider.profileImage.id,
       ),
     ));

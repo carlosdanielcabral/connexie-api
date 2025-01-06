@@ -11,7 +11,7 @@ import File from "../../../domain/entities/file";
 describe("[Use Case] Login Service Provider", () => {
     const serviceProviderExpected = new ServiceProvider('test-id', 'Test Name', 'test@email.com', 'test-password', [
         new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone'),
-    ], 'Test description', new File('original-name', 'encoding', 'mimeType', 'blobName', 1));
+    ], 'Test description', new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', 1));
 
     const prisma = new PrismaClient();
     const repository = new ServiceProviderRepository(prisma);

@@ -11,11 +11,11 @@ describe("[Use Case] List Service Provider", () => {
     const serviceProvidersExpected = [
         new ServiceProvider('test-id-01', 'Test Name', 'test@email.com', 'test-password', [
             new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone'),
-        ], 'Test description', new File('original-name', 'encoding', 'mimeType', 'blobName', 1)),
+        ], 'Test description', new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', 1)),
 
         new ServiceProvider('test-id-02', 'Test Name', 'test02@email.com', 'test-password', [
             new ServiceProviderContact('test-email-02', 'test-phone-02', 'test-cellphone-02'),
-        ], 'Test 02 description', new File('original-name', 'encoding', 'mimeType', 'blobName', 1)),
+        ], 'Test 02 description', new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', 1)),
     ]
 
     const prisma = new PrismaClient();

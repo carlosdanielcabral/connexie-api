@@ -5,7 +5,9 @@ class File {
         public encoding: string,
         public mimeType: string,
         public blobName: string,
-        public size: number,
+        public originalSize: number,
+        public compressedSize: number,
+        public url: string,
         public id?: number,
     ) {
     }
@@ -16,7 +18,7 @@ class File {
       encoding: this.encoding,
       mimeType: this.mimeType,
       blobName: this.blobName,
-      size: this.size,
+      size: this.compressedSize,
     });
 
     public toSimpleJson = () => ({
@@ -24,7 +26,7 @@ class File {
       encoding: this.encoding,
       mimeType: this.mimeType,
       blobName: this.blobName,
-      size: this.size,
+      size: this.compressedSize,
     });
   }
   

@@ -5,12 +5,12 @@ import ExternalServiceError from "../../application/errors/external-service-erro
 class AzureBlobStorageAdapter implements FileStorage {
     private client;
 
-    constructor(client?: BlobServiceClient) {
+    constructor(client?: BlobServiceClient, container?: string) {
         if (client === undefined) {
             client = BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNEXION_STRING as string);
         }
 
-        this.client = client.getContainerClient(process.env.AZURE_STORAGE_CONTAINER_NAME as string);
+        this.client = client.getContainerClient(container ?? process.env.AZURE_STORAGE_CONTAINER_NAME as string);
     }
 
     public uploadFile = async (blobName: string, content: Buffer): Promise<boolean> => {

@@ -7,12 +7,13 @@ import ValidationError from '../../errors/validation-error';
 import File from '../../../domain/entities/file';
 import FileService from '../../../infrastructure/services/file-service';
 import fs from 'fs/promises';
+import RegisterFile from '../file/register-file';
 
 class RegisterServiceProvider {
   constructor(
     private _serviceProviderRepository: IServiceProviderRepository,
     private _cryptService: ICryptService,
-    private _fileService: FileService,
+    private _registerFile: RegisterFile,
   ) {}
 
   public execute = async (dto: RegisterServiceProviderDTO): Promise<ServiceProvider> => {
@@ -24,29 +25,17 @@ class RegisterServiceProvider {
       contact.cellphone
     ));
 
-    const serviceProviderImage = new File(
-      profileImage.originalName,
-      profileImage.encoding,
-      profileImage.mimeType,
-      profileImage.blobName,
-      profileImage.size
-    );
-
+    const file = await this._registerFile.execute(profileImage);
+  
     const encryptedPassword = this._cryptService.encrypt(password);
   
-    const serviceProvider = new ServiceProvider(id, name, email, encryptedPassword, serviceProviderContacts, description, serviceProviderImage);
+    const serviceProvider = new ServiceProvider(id, name, email, encryptedPassword, serviceProviderContacts, description, file);
 
     const previousServiceProvider = await this._serviceProviderRepository.findByEmail(email);
 
     if (previousServiceProvider) throw new ValidationError('This email is already in use');
 
-    const entity = await this._serviceProviderRepository.create(serviceProvider);
-    
-    const fileBuffer = await fs.readFile(profileImage.tempPath);
-
-    await this._fileService.save(profileImage.blobName, fileBuffer);
-  
-    return entity;
+    return this._serviceProviderRepository.create(serviceProvider);
   };
 }
 

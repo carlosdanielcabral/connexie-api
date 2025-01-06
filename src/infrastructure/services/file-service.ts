@@ -7,13 +7,21 @@ class FileService {
   constructor(private storage: FileStorage = new AzureBlobStorageAdapter()) {}
 
   public save = async (filename: string, content: Buffer): Promise<string> => {
-    await this.storage.uploadFile(filename, await this.compress(content));
+    await this.storage.uploadFile(filename, content);
 
     return filename;
   }
 
-  private compress = async (content: Buffer): Promise<Buffer> => {
+  public compress = async (content: Buffer): Promise<Buffer> => {
     return sharp(content).webp().toBuffer();
+  }
+
+  public generateBlobName = (): string => {
+    return randomUUID();
+  }
+
+  public generateUrlBasedOnBlobName = (blobName: string): string => {
+    return `${process.env.AZURE_STORAGE_URL}/${process.env.AZURE_STORAGE_CONTAINER_NAME}/${blobName}`;
   }
 }
 

@@ -3,7 +3,7 @@ import { z } from "zod";
 import RegisterServiceProviderDTO from "../../../application/dtos/service-provider/register-service-provider";
 import RegisterServiceProviderContactDTO from "../../../application/dtos/service-provider/register-service-provider-contact";
 import { randomUUID } from "crypto";
-import RegisterServiceProviderImageDTO from "../../../application/dtos/service-provider/register-service-provider-image";
+import RegisterServiceProviderImageDTO from "../../../application/dtos/file/register-file";
 
 class ServiceProviderMiddleware {
   public create = (req: Request, res: Response, next: NextFunction) => {

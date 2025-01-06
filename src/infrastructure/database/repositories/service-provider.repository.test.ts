@@ -9,7 +9,7 @@ import File from "../../../domain/entities/file";
 describe("[Repository] Service Provider", () => {
     const serviceProviderMock = new ServiceProvider('test-id', 'Test Name', 'test@email.com', 'test-password', [
         new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone'),
-    ], 'Test description', new File('original-name', 'encoding', 'mimeType', 'blobName', 1));
+    ], 'Test description', new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url'));
 
     const prisma = new PrismaClient();
 
@@ -77,7 +77,9 @@ describe("[Repository] Service Provider", () => {
                         encoding: 'encoding',
                         mimeType: 'mimeType',
                         blobName: 'blobName',
-                        size: 1
+                        originalSize: 1,
+                        url: 'url',
+                        compressedSize: 0,
                     }
                 }),
             });

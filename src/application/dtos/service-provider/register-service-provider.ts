@@ -1,6 +1,6 @@
 import { randomUUID } from 'crypto';
 import RegisterServiceProviderContactDTO from './register-service-provider-contact';
-import RegisterServiceProviderImageDTO from './register-service-provider-image';
+import RegisterFileDTO from '../file/register-file';
 
 class RegisterServiceProviderDTO {
   constructor(
@@ -10,7 +10,7 @@ class RegisterServiceProviderDTO {
     public password: string,
     public contacts: RegisterServiceProviderContactDTO[],
     public description: string,
-    public profileImage: RegisterServiceProviderImageDTO,
+    public profileImage: RegisterFileDTO,
   ) {}
 }
 

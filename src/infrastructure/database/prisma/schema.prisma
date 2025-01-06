@@ -14,12 +14,11 @@ datasource db {
 }
 
 model ServiceProvider {
-
   id             String   @id @db.Char(36)
   name           String   @db.VarChar(255)
   email          String   @unique @db.VarChar(255)
   description    String   @db.Text
-  profileImageId Int?
+  profileImageId Int?     @map("profile_image_id")
   password       String   @db.VarChar(255)
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
@@ -31,7 +30,6 @@ model ServiceProvider {
 }
 
 model ServiceProviderContact {
-
   id                Int             @id @default(autoincrement())
   serviceProvider   ServiceProvider @relation(fields: [serviceProviderId], references: [id])
   serviceProviderId String          @map("service_provider_id") @db.Char(36)
@@ -45,13 +43,14 @@ model ServiceProviderContact {
 }
 
 model File {
-
   id              Int               @id @default(autoincrement())
-  originalName    String            @db.VarChar(255)
-  encoding       String            @db.VarChar(36)
-  mimeType        String            @db.VarChar(255)
-  blobName        String            @db.VarChar(255)
-  size            Int            
+  originalName    String            @map("original_name") @db.VarChar(500)
+  encoding        String            @db.VarChar(36)
+  mimeType        String            @map("mime_type") @db.VarChar(255)
+  blobName        String            @map("blob_name") @db.VarChar(500)
+  originalSize    Int               @map("original_size")
+  compressedSize  Int               @map("compressed_size")
+  url             String            @db.VarChar(500)
   createdAt       DateTime          @default(now()) @map("created_at")
   updatedAt       DateTime          @updatedAt @map("updated_at")
   ServiceProvider ServiceProvider[]
