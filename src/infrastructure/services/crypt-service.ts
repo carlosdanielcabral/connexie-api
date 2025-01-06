@@ -8,7 +8,7 @@ class CryptService implements ICryptService {
   constructor(key?: string) {
     this.key = key ?? crypto
       .createHash('sha512')
-      .update(process.env.ENCRYPTATION_KEY as string)
+      .update(process.env.ENCRYPTION_KEY as string)
       .digest('hex')
       .substring(0, 32);
   }
