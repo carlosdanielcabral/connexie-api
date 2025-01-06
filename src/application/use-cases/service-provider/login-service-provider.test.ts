@@ -9,11 +9,17 @@ import LoginServiceProvider from "./login-service-provider";
 import File from "../../../domain/entities/file";
 
 describe("[Use Case] Login Service Provider", () => {
-    const serviceProviderExpected = new ServiceProvider('test-id', 'Test Name', 'test@email.com', 'test-password', [
-        new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone'),
-    ], 'Test description', new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', 1));
+    const serviceProviderExpected = new ServiceProvider(
+        'test-id',
+        'Test Name',
+        'test@email.com',
+        'test-password',
+        [new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone')],
+        'Test description',
+        new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', '1')
+    );
 
-    const prisma = new PrismaClient();
+    const prisma = Sinon.createStubInstance(PrismaClient);
     const repository = new ServiceProviderRepository(prisma);
     const hashService = new HashService();
 
@@ -24,7 +30,7 @@ describe("[Use Case] Login Service Provider", () => {
     });
 
     test("Return service provider after success login", async () => {
-        sandbox.stub(repository, 'findByEmail').returns(Promise.resolve(serviceProviderExpected));
+        sandbox.stub(repository, 'findByEmail').resolves(serviceProviderExpected);
 
         const useCase = new LoginServiceProvider(repository, hashService);
 
@@ -36,7 +42,7 @@ describe("[Use Case] Login Service Provider", () => {
     });
 
     test("Throw error if service provider not found", async () => {
-        sandbox.stub(repository, 'findByEmail').returns(Promise.resolve(null));
+        sandbox.stub(repository, 'findByEmail').resolves(null);
 
         const useCase = new LoginServiceProvider(repository, hashService);
 
@@ -44,7 +50,7 @@ describe("[Use Case] Login Service Provider", () => {
     });
 
     test("Throw error if password is invalid", async () => {
-        sandbox.stub(repository, 'findByEmail').returns(Promise.resolve(serviceProviderExpected));
+        sandbox.stub(repository, 'findByEmail').resolves(serviceProviderExpected);
 
         const useCase = new LoginServiceProvider(repository, hashService);
 

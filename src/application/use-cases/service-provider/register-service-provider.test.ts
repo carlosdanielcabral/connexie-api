@@ -9,86 +9,61 @@ import ServiceProviderContact from "../../../domain/entities/service-provider-co
 import RegisterServiceProvider from "./register-service-provider";
 import HashService from "../../../infrastructure/services/hash-service";
 import File from "../../../domain/entities/file";
-import RegisterServiceProviderImageDTO from "../../dtos/file/register-file";
-import FileService from "../../../infrastructure/services/file-service";
-import { BlobServiceClient, BlockBlobClient, BlockBlobUploadResponse, ContainerClient } from "@azure/storage-blob";
-import AzureBlobStorageAdapter from "../../../infrastructure/storage/azure-blob-storage-adapter";
 import fs from 'fs/promises';
 import FileRepository from "../../../infrastructure/database/repositories/file-repository";
 import RegisterFile from "../file/register-file";
 import CryptService from "../../../infrastructure/services/crypt-service";
+import FindFileById from "../file/find-file-by-id";
 
 describe("[Use Case] Register Service Provider", () => {
-    const file = new File('encrypted', 'encoding', 'mimeType', 'encrypted', 1, 0, 'encrypted', 1);
+    const file = new File('encrypted', 'encoding', 'mimeType', 'encrypted', 1, 0, 'encrypted', 'uuid');
 
-    const serviceProviderExpected = new ServiceProvider('test-id', 'Test Name', 'test@email.com', 'test-password', [
-        new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone'),
-    ], 'Test description', file);
+    const serviceProviderExpected = new ServiceProvider(
+        'test-id',
+        'Test Name',
+        'test@email.com', 
+        'test-password',
+        [new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone')],
+        'Test description',
+        file
+    );
 
-    const dto = new RegisterServiceProviderDTO('test-id', 'Test Name', 'test@email.com', 'test-password', [
-        new RegisterServiceProviderContactDTO('test-email', 'test-phone', 'test-cellphone'),
-    ], 'Test description', new RegisterServiceProviderImageDTO('original-name', 'encoding', 'mimeType', 1, 'tempPath'));
+    const dto = new RegisterServiceProviderDTO(
+        'test-id',
+        'Test Name',
+        'test@email.com',
+        'test-password',
+        [new RegisterServiceProviderContactDTO('test-email', 'test-phone', 'test-cellphone')],
+        'Test description',
+        'uuid'
+    );
 
-    const prisma = new PrismaClient();
+    const prisma = Sinon.createStubInstance(PrismaClient);
     const repository = new ServiceProviderRepository(prisma);
-    const hashService = new HashService();
-
-    let blobClient: SinonStubbedInstance<BlobServiceClient>;
-    let containerClient: SinonStubbedInstance<ContainerClient>;
-    let blockClient: SinonStubbedInstance<BlockBlobClient>
-
-    let storageAdapater: AzureBlobStorageAdapter;
-    let fileService: FileService;
-    let registerFile: RegisterFile;
-
     const fileRepository = new FileRepository(prisma);
+    const findFileById = new FindFileById(fileRepository);
+
+    const hashService = new HashService();
     const cryptService = new CryptService('3BWrUbi4bMHcHoPn5zZgvcitJRUc8wOB');
 
     const sandbox = Sinon.createSandbox();
 
     beforeEach(() => {
-        const successfullResponse = new Promise<BlockBlobUploadResponse>((resolve) => {
-            resolve({
-                _response: {
-                    status: 201,
-                }
-            } as BlockBlobUploadResponse);
-        });
-
-        blobClient = Sinon.createStubInstance(BlobServiceClient);
-        containerClient = Sinon.createStubInstance(ContainerClient);
-        blockClient = Sinon.createStubInstance(BlockBlobClient);
-
-        blockClient.upload.returns(successfullResponse);
-        containerClient.getBlockBlobClient.returns(blockClient);
-        blobClient.getContainerClient.returns(containerClient);
-
-        storageAdapater = new AzureBlobStorageAdapter(blobClient);
-
-        fileService = new FileService(storageAdapater);
-
-        sandbox.stub(repository, 'create').returns(Promise.resolve(serviceProviderExpected));
+        sandbox.stub(repository, 'create').resolves(serviceProviderExpected);
         sandbox.stub(hashService, 'hash').returns('test-id');
-        sandbox.stub(fileService, 'save').resolves('blobName');
         sandbox.stub(fs, 'readFile').resolves(new Buffer('test'));
         sandbox.stub(cryptService, 'encrypt').returns('encrypted');
-
-        registerFile = new RegisterFile(fileRepository, fileService, cryptService);
-        sandbox.stub(registerFile, 'execute').resolves(file);
     });
 
     afterEach(() => {
         sandbox.restore();
-
-        blockClient.upload.restore();
-        containerClient.getBlockBlobClient.restore();
-        blobClient.getContainerClient.restore();
     });
 
     test("Return service provider after success insertion", async () => {
-        sandbox.stub(repository, 'findByEmail').returns(Promise.resolve(null));
+        sandbox.stub(findFileById, 'execute').resolves(file);
+        sandbox.stub(repository, 'findByEmail').resolves(null);
 
-        const useCase = new RegisterServiceProvider(repository, hashService, registerFile);
+        const useCase = new RegisterServiceProvider(repository, hashService, findFileById);
 
         const response = await useCase.execute(dto);
 
@@ -96,10 +71,20 @@ describe("[Use Case] Register Service Provider", () => {
     });
 
     test("Throw error if email is already in use", async () => {
-        sandbox.stub(repository, 'findByEmail').returns(Promise.resolve(serviceProviderExpected));
+        sandbox.stub(findFileById, 'execute').resolves(file);
+        sandbox.stub(repository, 'findByEmail').resolves(serviceProviderExpected);
 
-        const useCase = new RegisterServiceProvider(repository, hashService, registerFile);
+        const useCase = new RegisterServiceProvider(repository, hashService, findFileById);
 
         await expect(useCase.execute(dto)).rejects.toThrow('This email is already in use');
+    });
+
+    test("Throw error if profile image not found", async () => {
+        sandbox.stub(findFileById, 'execute').resolves(null);
+        sandbox.stub(repository, 'findByEmail').resolves(null);
+
+        const useCase = new RegisterServiceProvider(repository, hashService, findFileById);
+
+        await expect(useCase.execute(dto)).rejects.toThrow('Profile image not found');
     });
 })

@@ -18,7 +18,7 @@ model ServiceProvider {
   name           String   @db.VarChar(255)
   email          String   @unique @db.VarChar(255)
   description    String   @db.Text
-  profileImageId Int?     @map("profile_image_id")
+  profileImageId String?  @map("profile_image_id") @db.Char(36)
   password       String   @db.VarChar(255)
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
@@ -43,7 +43,7 @@ model ServiceProviderContact {
 }
 
 model File {
-  id              Int               @id @default(autoincrement())
+  id              String            @id @db.Char(36)
   originalName    String            @map("original_name") @db.VarChar(500)
   encoding        String            @db.VarChar(36)
   mimeType        String            @map("mime_type") @db.VarChar(255)

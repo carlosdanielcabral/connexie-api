@@ -5,12 +5,13 @@ import RegisterServiceProviderDTO from '../../dtos/service-provider/register-ser
 import ValidationError from '../../errors/validation-error';
 import RegisterFile from '../file/register-file';
 import HashService from '../../../interfaces/services/hash-service';
+import FindFileById from '../file/find-file-by-id';
 
 class RegisterServiceProvider {
   constructor(
     private _serviceProviderRepository: IServiceProviderRepository,
     private _hashService: HashService,
-    private _registerFile: RegisterFile,
+    private _findFileById: FindFileById,
   ) {}
 
   public execute = async (dto: RegisterServiceProviderDTO): Promise<ServiceProvider> => {
@@ -20,13 +21,15 @@ class RegisterServiceProvider {
 
     if (previousServiceProvider) throw new ValidationError('This email is already in use');
 
+    const file = await this._findFileById.execute(profileImage);
+  
+    if (file === null) throw new ValidationError('Profile image not found');
+
     const serviceProviderContacts = contacts.map(contact => new ServiceProviderContact(
       contact.email,
       contact.phone,
       contact.cellphone
     ));
-
-    const file = await this._registerFile.execute(profileImage);
   
     const encryptedPassword = this._hashService.hash(password);
   

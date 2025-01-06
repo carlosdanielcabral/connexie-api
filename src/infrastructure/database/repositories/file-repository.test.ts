@@ -5,7 +5,7 @@ import File from "../../../domain/entities/file";
 import FileRepository from "./file-repository";
 
 describe("[Repository] File", () => {
-    const file = new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', 1);
+    const file = new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', 'uuid');
 
     const prisma = new PrismaClient();
 

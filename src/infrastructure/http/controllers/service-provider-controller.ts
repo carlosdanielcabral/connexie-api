@@ -15,6 +15,7 @@ import IFileService from "../../../interfaces/services/file-service";
 import FileService from "../../services/file-service";
 import IHashService from "../../../interfaces/services/hash-service";
 import HashService from "../../services/hash-service";
+import FindFileById from "../../../application/use-cases/file/find-file-by-id";
 
 class ServiceProviderController {
     constructor(
@@ -29,8 +30,8 @@ class ServiceProviderController {
     public create = async (req: Request, res: Response) => {
         const dto: RegisterServiceProviderDTO = req.body.dto;
 
-        const registerFile = new RegisterFile(this._fileRepository, this._fileService, this._cryptService);
-        const useCase = new RegisterServiceProvider(this._repository, this._hashService, registerFile);
+        const findFileById = new FindFileById(this._fileRepository);
+        const useCase = new RegisterServiceProvider(this._repository, this._hashService, findFileById);
         const provider = await useCase.execute(dto);
 
         return res

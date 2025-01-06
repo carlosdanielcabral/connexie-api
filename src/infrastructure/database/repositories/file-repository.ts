@@ -6,8 +6,9 @@ class FileRepository implements IFileRepository {
  constructor(private prisma: PrismaClient = new PrismaClient()) {}
 
   public create = async (file: File): Promise<File> => {
-    const created = await this.prisma.file.create({
+    await this.prisma.file.create({
       data: {
+        id: file.id,
         originalName: file.originalName,
         encoding: file.encoding,
         mimeType: file.mimeType,
@@ -18,10 +19,26 @@ class FileRepository implements IFileRepository {
       },
     });
 
-    file.id = created.id;
-
     return file;
   }
+
+  public findById = async (id: string): Promise<File | null> => {
+    const file = await this.prisma.file.findUnique({ where: { id } });
+
+    if (!file) return null;
+
+    return new File(
+      file.originalName,
+      file.encoding,
+      file.mimeType,
+      file.blobName,
+      file.originalSize,
+      file.compressedSize,
+      file.url,
+      file.id,
+    );
+  }
+
 }
 
 export default FileRepository;

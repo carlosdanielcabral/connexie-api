@@ -13,9 +13,7 @@ class ServiceProviderRoute implements Route {
     }
 
     public register = (app: Express) => {
-        const upload = multer({ dest:  os.tmpdir() });
-
-        app.post('/service-provider', upload.single('profileImage'), this._middleware.create, this._controller.create);
+        app.post('/service-provider', this._middleware.create, this._controller.create);
         app.post('/service-provider/login', this._middleware.login, this._controller.login);
         app.get('/service-provider', this._controller.list);
     }

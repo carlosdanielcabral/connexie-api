@@ -7,9 +7,18 @@ import ServiceProviderContact from "../../../domain/entities/service-provider-co
 import File from "../../../domain/entities/file";
 
 describe("[Repository] Service Provider", () => {
-    const serviceProviderMock = new ServiceProvider('test-id', 'Test Name', 'test@email.com', 'test-password', [
-        new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone'),
-    ], 'Test description', new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url'));
+    const file = new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', 'uuid');
+    const contacts = [new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone')];
+
+    const serviceProviderMock = new ServiceProvider(
+        'test-id',
+        'Test Name',
+        'test@email.com',
+        'test-password',
+        contacts,
+        'Test description',
+        file
+    );
 
     const prisma = new PrismaClient();
 
@@ -80,6 +89,7 @@ describe("[Repository] Service Provider", () => {
                         originalSize: 1,
                         url: 'url',
                         compressedSize: 0,
+                        id: 'uuid',
                     }
                 }),
             });

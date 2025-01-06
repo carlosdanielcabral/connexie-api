@@ -10,7 +10,7 @@ class RegisterServiceProviderDTO {
     public password: string,
     public contacts: RegisterServiceProviderContactDTO[],
     public description: string,
-    public profileImage: RegisterFileDTO,
+    public profileImage: string,
   ) {}
 }
 

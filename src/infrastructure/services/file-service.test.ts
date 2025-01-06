@@ -28,21 +28,17 @@ describe("[Service] File Service", () => {
         });
 
         test("Return generated blob name after success insertion", async () => {
-            const successfullResponse = new Promise<BlockBlobUploadResponse>((resolve) => {
-                resolve({
-                    _response: {
-                        status: 201,
-                    }
-                } as BlockBlobUploadResponse);
-            });
+            const successfullResponse = {
+                _response: { status: 201 }
+            } as BlockBlobUploadResponse;
 
-            blockClient.upload.returns(successfullResponse);
+            blockClient.upload.resolves(successfullResponse);
             containerClient.getBlockBlobClient.returns(blockClient);
             blobClient.getContainerClient.returns(containerClient);
 
             const storage = new AzureBlobStorageAdapter(blobClient);
 
-            sandbox.stub(storage, 'uploadFile').returns(new Promise((resolve) => resolve(true)));
+            sandbox.stub(storage, 'uploadFile').resolves(true);
 
             const fileService = new FileService(storage);
 
@@ -54,15 +50,11 @@ describe("[Service] File Service", () => {
         });
 
         test("Throw an exception after failed insertion", async () => {
-            const errorResponse = new Promise<BlockBlobUploadResponse>((resolve) => {
-                resolve({
-                    _response: {
-                        status: 500,
-                    }
-                } as BlockBlobUploadResponse);
-            });
+            const errorResponse = {
+                _response: { status: 500 }
+            } as BlockBlobUploadResponse;
 
-            blockClient.upload.returns(errorResponse);
+            blockClient.upload.resolves(errorResponse);
             containerClient.getBlockBlobClient.returns(blockClient);
             blobClient.getContainerClient.returns(containerClient);
 

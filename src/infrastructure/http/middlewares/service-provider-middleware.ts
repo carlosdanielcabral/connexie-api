@@ -17,14 +17,8 @@ class ServiceProviderMiddleware {
             cellphone: z.string(),
         })).optional(),
         description: z.string(),
+        profileImage: z.string(),
     }).parse(req.body);
-
-    z.object({
-        originalname: z.string(),
-        encoding: z.string(),
-        mimetype: z.string(),
-        size: z.number(),
-    }).parse(req.file);
 
     req.body.dto = new RegisterServiceProviderDTO(
         randomUUID(),
@@ -38,14 +32,8 @@ class ServiceProviderMiddleware {
             contact.cellphone
         )) ?? [],
         req.body.description,
-        new RegisterServiceProviderImageDTO(
-          req.file!.originalname,
-          req.file!.encoding,
-          req.file!.mimetype,
-          req.file!.size,
-          req.file!.path
-        ),
-    )
+        req.body.profileImage,
+    );
 
     return next();
   }

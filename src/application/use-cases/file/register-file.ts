@@ -22,7 +22,6 @@ class RegisterFile {
     const url =  this._fileService.generateUrlBasedOnBlobName(blobName);
 
     const originalSize = Buffer.byteLength(fileBuffer);
-    const compressedSize = Buffer.byteLength(compressedFileBuffer);
 
     const file = new File(
         this._cryptService.encrypt(originalName),
@@ -30,8 +29,9 @@ class RegisterFile {
         mimeType,
         this._cryptService.encrypt(blobName),
         originalSize,
-        compressedSize,
+        originalSize,
         this._cryptService.encrypt(url),
+        dto.id,
     );
 
     await this._fileService.save(blobName, compressedFileBuffer);

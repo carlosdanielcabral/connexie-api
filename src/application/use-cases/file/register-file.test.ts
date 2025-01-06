@@ -13,11 +13,12 @@ import RegisterFile from "./register-file";
 import CryptService from "../../../infrastructure/services/crypt-service";
 
 describe("[Use Case] Register File", () => {
-    const file = new File('encrypted', 'encoding', 'mimeType', 'encrypted', 1, 0, 'encrypted', 1);
+    const file = new File('encrypted', 'encoding', 'mimeType', 'encrypted', 1, 0, 'encrypted', 'uuid');
 
-    const dto = new RegisterFileDTO('original-name', 'encoding', 'mimeType', 1, 'tempPath');
+    const dto = new RegisterFileDTO('uuid', 'original-name', 'encoding', 'mimeType', 1, 'tempPath');
 
-    const prisma = new PrismaClient();
+    const prisma = Sinon.createStubInstance(PrismaClient);
+
     const repository = new FileRepository(prisma);
     const hashService = new HashService();
 
@@ -33,19 +34,15 @@ describe("[Use Case] Register File", () => {
     const cryptService = new CryptService('3BWrUbi4bMHcHoPn5zZgvcitJRUc8wOB');
 
     beforeEach(() => {
-        const successfullResponse = new Promise<BlockBlobUploadResponse>((resolve) => {
-            resolve({
-                _response: {
-                    status: 201,
-                }
-            } as BlockBlobUploadResponse);
-        });
+        const successfullResponse = {
+            _response: { status: 201 }
+        } as BlockBlobUploadResponse;
 
         blobClient = Sinon.createStubInstance(BlobServiceClient);
         containerClient = Sinon.createStubInstance(ContainerClient);
         blockClient = Sinon.createStubInstance(BlockBlobClient);
 
-        blockClient.upload.returns(successfullResponse);
+        blockClient.upload.resolves(successfullResponse);
         containerClient.getBlockBlobClient.returns(blockClient);
         blobClient.getContainerClient.returns(containerClient);
 
@@ -69,7 +66,7 @@ describe("[Use Case] Register File", () => {
     });
 
     test("Return file after success insertion", async () => {
-        sandbox.stub(repository, 'create').returns(Promise.resolve(file));
+        sandbox.stub(repository, 'create').resolves(file);
 
         const useCase = new RegisterFile(repository, fileService, cryptService);
 
