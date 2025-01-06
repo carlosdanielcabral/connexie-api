@@ -15,6 +15,7 @@ import FileService from "../../services/file-service";
 import IHashService from "../../../interfaces/services/hash-service";
 import HashService from "../../services/hash-service";
 import FindFileById from "../../../application/use-cases/file/find-file-by-id";
+import ListServiceProvider from "../../../application/use-cases/service-provider/list-service-provider";
 
 class ServiceProviderController {
     constructor(
@@ -51,7 +52,11 @@ class ServiceProviderController {
     }
 
     public list = async (req: Request, res: Response) => {
-        const providers = await this._repository.list();
+        const { filter } = req.body;
+
+        const useCase = new ListServiceProvider(this._repository);
+
+        const providers = await useCase.execute(filter);
 
         return res.status(HttpStatusCode.Ok).json({ providers: providers.map((provider) => provider.toJson()) });
     }
