@@ -2,8 +2,6 @@ import { Express } from 'express';
 import Route from '../../../interfaces/routes/route';
 import ServiceProviderController from '../controllers/service-provider-controller';
 import ServiceProviderMiddleware from '../middlewares/service-provider-middleware';
-import multer from 'multer';
-import os from 'node:os';
 
 class ServiceProviderRoute implements Route {
     constructor(

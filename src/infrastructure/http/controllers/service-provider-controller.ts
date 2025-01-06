@@ -6,7 +6,6 @@ import ServiceProviderRepository from "../../database/repositories/service-provi
 import LoginServiceProvider from "../../../application/use-cases/service-provider/login-service-provider";
 import IFileRepository from "../../../interfaces/repositories/file-repository";
 import FileRepository from "../../database/repositories/file-repository";
-import RegisterFile from "../../../application/use-cases/file/register-file";
 import ICryptService from "../../../interfaces/services/crypt-service";
 import CryptService from "../../services/crypt-service";
 import ITokenService from "../../../interfaces/services/token-service";

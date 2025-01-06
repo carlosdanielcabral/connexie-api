@@ -1,6 +1,6 @@
 
 import { PrismaClient } from "@prisma/client";
-import Sinon, { SinonStubbedInstance } from "sinon";
+import Sinon from "sinon";
 import RegisterServiceProviderDTO from "../../dtos/service-provider/register-service-provider";
 import RegisterServiceProviderContactDTO from "../../dtos/service-provider/register-service-provider-contact";
 import ServiceProviderRepository from "../../../infrastructure/database/repositories/service-provider-repository";
@@ -11,7 +11,6 @@ import HashService from "../../../infrastructure/services/hash-service";
 import File from "../../../domain/entities/file";
 import fs from 'fs/promises';
 import FileRepository from "../../../infrastructure/database/repositories/file-repository";
-import RegisterFile from "../file/register-file";
 import CryptService from "../../../infrastructure/services/crypt-service";
 import FindFileById from "../file/find-file-by-id";
 

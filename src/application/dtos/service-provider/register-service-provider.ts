@@ -1,6 +1,5 @@
 import { randomUUID } from 'crypto';
 import RegisterServiceProviderContactDTO from './register-service-provider-contact';
-import RegisterFileDTO from '../file/register-file';
 
 class RegisterServiceProviderDTO {
   constructor(

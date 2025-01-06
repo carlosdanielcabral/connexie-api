@@ -3,7 +3,6 @@ import ServiceProviderContact from '../../../domain/entities/service-provider-co
 import IServiceProviderRepository from '../../../interfaces/repositories/service-provider-repository';
 import RegisterServiceProviderDTO from '../../dtos/service-provider/register-service-provider';
 import ValidationError from '../../errors/validation-error';
-import RegisterFile from '../file/register-file';
 import HashService from '../../../interfaces/services/hash-service';
 import FindFileById from '../file/find-file-by-id';
 
