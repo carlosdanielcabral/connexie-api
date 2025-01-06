@@ -6,11 +6,7 @@ class CryptService implements ICryptService {
   private readonly key: string;
 
   constructor(key?: string) {
-    this.key = key ?? crypto
-      .createHash('sha512')
-      .update(process.env.ENCRYPTION_KEY as string)
-      .digest('hex')
-      .substring(0, 32);
+    this.key = key ?? process.env.ENCRYPTION_KEY as string;
   }
 
   public encrypt = (data: string): string => {
