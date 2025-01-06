@@ -2,17 +2,15 @@ import ServiceProvider from '../../../domain/entities/service-provider';
 import ServiceProviderContact from '../../../domain/entities/service-provider-contact';
 import IServiceProviderRepository from '../../../interfaces/repositories/service-provider-repository';
 import RegisterServiceProviderDTO from '../../dtos/service-provider/register-service-provider';
-import ICryptService from '../../../interfaces/services/crypt-service';
 import ValidationError from '../../errors/validation-error';
-import File from '../../../domain/entities/file';
 import FileService from '../../../infrastructure/services/file-service';
-import fs from 'fs/promises';
 import RegisterFile from '../file/register-file';
+import HashService from '../../../interfaces/services/hash-service';
 
 class RegisterServiceProvider {
   constructor(
     private _serviceProviderRepository: IServiceProviderRepository,
-    private _cryptService: ICryptService,
+    private _hashService: HashService,
     private _registerFile: RegisterFile,
   ) {}
 
@@ -27,7 +25,7 @@ class RegisterServiceProvider {
 
     const file = await this._registerFile.execute(profileImage);
   
-    const encryptedPassword = this._cryptService.encrypt(password);
+    const encryptedPassword = this._hashService.hash(password);
   
     const serviceProvider = new ServiceProvider(id, name, email, encryptedPassword, serviceProviderContacts, description, file);
 

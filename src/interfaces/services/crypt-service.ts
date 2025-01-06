@@ -1,6 +1,6 @@
 interface CryptService {
     encrypt(data: string): string;
-    compare(data: string, encrypted: string): boolean;
+    decrypt(data: string): string;
 }
 
 export default CryptService;

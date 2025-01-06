@@ -1,14 +1,16 @@
 import ServiceProvider from '../../../domain/entities/service-provider';
 import File from '../../../domain/entities/file';
-import FileService from '../../../infrastructure/services/file-service';
 import fs from 'fs/promises';
 import RegisterFileDTO from '../../dtos/file/register-file';
 import FileRepository from '../../../interfaces/repositories/file-repository';
+import FileService from '../../../interfaces/services/file-service';
+import CryptService from '../../../interfaces/services/crypt-service';
 
 class RegisterFile {
   constructor(
-    private _fileService: FileService,
     private _fileRepository: FileRepository,
+    private _fileService: FileService,
+    private _cryptService: CryptService,
   ) {}
 
   public execute = async (dto: RegisterFileDTO): Promise<File> => {
@@ -24,13 +26,13 @@ class RegisterFile {
     const compressedSize = Buffer.byteLength(compressedFileBuffer);
 
     const file = new File(
-        originalName,
+        this._cryptService.encrypt(originalName),
         encoding,
         mimeType,
-        blobName,
+        this._cryptService.encrypt(blobName),
         originalSize,
         compressedSize,
-        url,
+        this._cryptService.encrypt(url),
     );
 
     await this._fileService.save(blobName, compressedFileBuffer);

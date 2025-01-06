@@ -4,7 +4,7 @@ import Sinon from "sinon";
 import ServiceProviderRepository from "../../../infrastructure/database/repositories/service-provider-repository";
 import ServiceProvider from "../../../domain/entities/service-provider";
 import ServiceProviderContact from "../../../domain/entities/service-provider-contact";
-import CryptService from "../../../infrastructure/services/crypt-service";
+import HashService from "../../../infrastructure/services/hash-service";
 import LoginServiceProvider from "./login-service-provider";
 import File from "../../../domain/entities/file";
 
@@ -15,7 +15,7 @@ describe("[Use Case] Login Service Provider", () => {
 
     const prisma = new PrismaClient();
     const repository = new ServiceProviderRepository(prisma);
-    const cryptService = new CryptService();
+    const hashService = new HashService();
 
     const sandbox = Sinon.createSandbox();
 
@@ -26,9 +26,9 @@ describe("[Use Case] Login Service Provider", () => {
     test("Return service provider after success login", async () => {
         sandbox.stub(repository, 'findByEmail').returns(Promise.resolve(serviceProviderExpected));
 
-        const useCase = new LoginServiceProvider(repository, cryptService);
+        const useCase = new LoginServiceProvider(repository, hashService);
 
-        sandbox.stub(cryptService, 'compare').returns(true);
+        sandbox.stub(hashService, 'compare').returns(true);
 
         const response = await useCase.execute(serviceProviderExpected.email, serviceProviderExpected.password);
 
@@ -38,7 +38,7 @@ describe("[Use Case] Login Service Provider", () => {
     test("Throw error if service provider not found", async () => {
         sandbox.stub(repository, 'findByEmail').returns(Promise.resolve(null));
 
-        const useCase = new LoginServiceProvider(repository, cryptService);
+        const useCase = new LoginServiceProvider(repository, hashService);
 
         await expect(useCase.execute(serviceProviderExpected.email, serviceProviderExpected.password)).rejects.toThrow('Invalid email or password');
     });
@@ -46,9 +46,9 @@ describe("[Use Case] Login Service Provider", () => {
     test("Throw error if password is invalid", async () => {
         sandbox.stub(repository, 'findByEmail').returns(Promise.resolve(serviceProviderExpected));
 
-        const useCase = new LoginServiceProvider(repository, cryptService);
+        const useCase = new LoginServiceProvider(repository, hashService);
 
-        sandbox.stub(cryptService, 'compare').returns(false);
+        sandbox.stub(hashService, 'compare').returns(false);
 
         await expect(useCase.execute(serviceProviderExpected.email, serviceProviderExpected.password)).rejects.toThrow('Invalid email or password');
     });

@@ -7,7 +7,7 @@ import ServiceProviderRepository from "../../../infrastructure/database/reposito
 import ServiceProvider from "../../../domain/entities/service-provider";
 import ServiceProviderContact from "../../../domain/entities/service-provider-contact";
 import RegisterServiceProvider from "./register-service-provider";
-import CryptService from "../../../infrastructure/services/crypt-service";
+import HashService from "../../../infrastructure/services/hash-service";
 import File from "../../../domain/entities/file";
 import RegisterServiceProviderImageDTO from "../../dtos/file/register-file";
 import FileService from "../../../infrastructure/services/file-service";
@@ -16,9 +16,10 @@ import AzureBlobStorageAdapter from "../../../infrastructure/storage/azure-blob-
 import fs from 'fs/promises';
 import FileRepository from "../../../infrastructure/database/repositories/file-repository";
 import RegisterFile from "../file/register-file";
+import CryptService from "../../../infrastructure/services/crypt-service";
 
 describe("[Use Case] Register Service Provider", () => {
-    const file = new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', 1);
+    const file = new File('encrypted', 'encoding', 'mimeType', 'encrypted', 1, 0, 'encrypted', 1);
 
     const serviceProviderExpected = new ServiceProvider('test-id', 'Test Name', 'test@email.com', 'test-password', [
         new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone'),
@@ -30,7 +31,7 @@ describe("[Use Case] Register Service Provider", () => {
 
     const prisma = new PrismaClient();
     const repository = new ServiceProviderRepository(prisma);
-    const cryptService = new CryptService();
+    const hashService = new HashService();
 
     let blobClient: SinonStubbedInstance<BlobServiceClient>;
     let containerClient: SinonStubbedInstance<ContainerClient>;
@@ -41,6 +42,7 @@ describe("[Use Case] Register Service Provider", () => {
     let registerFile: RegisterFile;
 
     const fileRepository = new FileRepository(prisma);
+    const cryptService = new CryptService();
 
     const sandbox = Sinon.createSandbox();
 
@@ -66,11 +68,12 @@ describe("[Use Case] Register Service Provider", () => {
         fileService = new FileService(storageAdapater);
 
         sandbox.stub(repository, 'create').returns(Promise.resolve(serviceProviderExpected));
-        sandbox.stub(cryptService, 'encrypt').returns('test-id');
+        sandbox.stub(hashService, 'hash').returns('test-id');
         sandbox.stub(fileService, 'save').resolves('blobName');
         sandbox.stub(fs, 'readFile').resolves(new Buffer('test'));
+        sandbox.stub(cryptService, 'encrypt').returns('encrypted');
 
-        registerFile = new RegisterFile(fileService, fileRepository);
+        registerFile = new RegisterFile(fileRepository, fileService, new CryptService());
         sandbox.stub(registerFile, 'execute').resolves(file);
     });
 
@@ -85,7 +88,7 @@ describe("[Use Case] Register Service Provider", () => {
     test("Return service provider after success insertion", async () => {
         sandbox.stub(repository, 'findByEmail').returns(Promise.resolve(null));
 
-        const useCase = new RegisterServiceProvider(repository, cryptService, registerFile);
+        const useCase = new RegisterServiceProvider(repository, hashService, registerFile);
 
         const response = await useCase.execute(dto);
 
@@ -95,7 +98,7 @@ describe("[Use Case] Register Service Provider", () => {
     test("Throw error if email is already in use", async () => {
         sandbox.stub(repository, 'findByEmail').returns(Promise.resolve(serviceProviderExpected));
 
-        const useCase = new RegisterServiceProvider(repository, cryptService, registerFile);
+        const useCase = new RegisterServiceProvider(repository, hashService, registerFile);
 
         await expect(useCase.execute(dto)).rejects.toThrow('This email is already in use');
     });

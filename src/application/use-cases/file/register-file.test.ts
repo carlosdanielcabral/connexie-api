@@ -1,16 +1,17 @@
 
 import { PrismaClient } from "@prisma/client";
 import Sinon, { SinonStubbedInstance } from "sinon";
-import CryptService from "../../../infrastructure/services/crypt-service";
+import HashService from "../../../infrastructure/services/hash-service";
 import File from "../../../domain/entities/file";
 import FileService from "../../../infrastructure/services/file-service";
 import { BlobServiceClient, BlockBlobClient, BlockBlobUploadResponse, ContainerClient } from "@azure/storage-blob";
 import AzureBlobStorageAdapter from "../../../infrastructure/storage/azure-blob-storage-adapter";
 import fs from 'fs/promises';
 import FileRepository from "../../../infrastructure/database/repositories/file-repository";
-import RegisterFileDTO from "../file/register-file";
-import RegisterFile from "../../use-cases/file/register-file";
+import RegisterFileDTO from "../../dtos/file/register-file";
+import RegisterFile from "./register-file";
 import sharp from "sharp";
+import CryptService from "../../../infrastructure/services/crypt-service";
 
 describe("[Use Case] Register File", () => {
     const file = new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', 1);
@@ -19,7 +20,7 @@ describe("[Use Case] Register File", () => {
 
     const prisma = new PrismaClient();
     const repository = new FileRepository(prisma);
-    const cryptService = new CryptService();
+    const hashService = new HashService();
 
     let blobClient: SinonStubbedInstance<BlobServiceClient>;
     let containerClient: SinonStubbedInstance<ContainerClient>;
@@ -52,7 +53,7 @@ describe("[Use Case] Register File", () => {
 
         fileService = new FileService(storageAdapater);
 
-        sandbox.stub(cryptService, 'encrypt').returns('test-id');
+        sandbox.stub(hashService, 'hash').returns('test-id');
         sandbox.stub(fileService, 'save').resolves('blobName');
         sandbox.stub(fs, 'readFile').resolves(new Buffer('test'));
         sandbox.stub(fileService, 'compress').resolves(Buffer.from('test'));
@@ -69,7 +70,7 @@ describe("[Use Case] Register File", () => {
     test("Return file after success insertion", async () => {
         sandbox.stub(repository, 'create').returns(Promise.resolve(file));
 
-        const useCase = new RegisterFile(fileService, repository);
+        const useCase = new RegisterFile(repository, fileService, new CryptService());
 
         const response = await useCase.execute(dto);
 
