@@ -6,9 +6,9 @@ class CryptService implements ICryptService {
   private readonly key: string;
 
   constructor(key?: string) {
-    this.key = key ?? crypto
+    this.key = crypto
       .createHash('sha512')
-      .update(process.env.ENCRYPTION_KEY as string)
+      .update(process.env.ENCRYPTION_KEY ?? key!)
       .digest('hex')
       .substring(0, 32);
   }
