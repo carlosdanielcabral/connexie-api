@@ -19,7 +19,7 @@ class ServiceProvider {
       email: this.email,
       contact: this.contacts.map(contact => contact.toJson()),
       description: this.description,
-      image: this.profileImage?.blobName,
+      image: this.profileImage?.url,
     })
   }
   

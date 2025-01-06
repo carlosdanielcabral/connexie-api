@@ -15,7 +15,11 @@ class RegisterServiceProvider {
 
   public execute = async (dto: RegisterServiceProviderDTO): Promise<ServiceProvider> => {
     const { id, name, email, password, contacts, description, profileImage } = dto;
-  
+
+    const previousServiceProvider = await this._serviceProviderRepository.findByEmail(email);
+
+    if (previousServiceProvider) throw new ValidationError('This email is already in use');
+
     const serviceProviderContacts = contacts.map(contact => new ServiceProviderContact(
       contact.email,
       contact.phone,
@@ -27,10 +31,6 @@ class RegisterServiceProvider {
     const encryptedPassword = this._hashService.hash(password);
   
     const serviceProvider = new ServiceProvider(id, name, email, encryptedPassword, serviceProviderContacts, description, file);
-
-    const previousServiceProvider = await this._serviceProviderRepository.findByEmail(email);
-
-    if (previousServiceProvider) throw new ValidationError('This email is already in use');
 
     return this._serviceProviderRepository.create(serviceProvider);
   };

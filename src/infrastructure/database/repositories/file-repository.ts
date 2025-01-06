@@ -6,7 +6,7 @@ class FileRepository implements IFileRepository {
  constructor(private prisma: PrismaClient = new PrismaClient()) {}
 
   public create = async (file: File): Promise<File> => {
-    await this.prisma.file.create({
+    const created = await this.prisma.file.create({
       data: {
         originalName: file.originalName,
         encoding: file.encoding,
@@ -17,6 +17,8 @@ class FileRepository implements IFileRepository {
         url: file.url,
       },
     });
+
+    file.id = created.id;
 
     return file;
   }
