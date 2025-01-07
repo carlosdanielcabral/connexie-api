@@ -4,7 +4,7 @@ import Sinon from "sinon";
 import RegisterServiceProviderDTO from "../../dtos/service-provider/register-service-provider";
 import RegisterServiceProviderContactDTO from "../../dtos/service-provider/register-service-provider-contact";
 import ServiceProviderRepository from "../../../infrastructure/database/repositories/service-provider-repository";
-import ServiceProvider from "../../../domain/entities/service-provider";
+import ServiceProvider, { JobMode } from "../../../domain/entities/service-provider";
 import ServiceProviderContact from "../../../domain/entities/service-provider-contact";
 import RegisterServiceProvider from "./register-service-provider";
 import HashService from "../../../infrastructure/services/hash-service";
@@ -13,6 +13,8 @@ import fs from 'fs/promises';
 import FileRepository from "../../../infrastructure/database/repositories/file-repository";
 import CryptService from "../../../infrastructure/services/crypt-service";
 import FindFileById from "../file/find-file-by-id";
+import ServiceProviderAddress from "../../../domain/entities/service-provider-address";
+import RegisterServiceProviderAddressDTO from "../../dtos/service-provider/register-service-provider-address";
 
 describe("[Use Case] Register Service Provider", () => {
     const file = new File('encrypted', 'encoding', 'mimeType', 'encrypted', 1, 0, 'encrypted', 'uuid');
@@ -24,7 +26,9 @@ describe("[Use Case] Register Service Provider", () => {
         'test-password',
         [new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone')],
         'Test description',
-        file
+        file,
+        JobMode.ONSITE,
+        [new ServiceProviderAddress('cep', 'city', 'state', 'uf', 1)],
     );
 
     const dto = new RegisterServiceProviderDTO(
@@ -34,7 +38,9 @@ describe("[Use Case] Register Service Provider", () => {
         'test-password',
         [new RegisterServiceProviderContactDTO('test-email', 'test-phone', 'test-cellphone')],
         'Test description',
-        'uuid'
+        'uuid',
+        JobMode.ONSITE,
+        new RegisterServiceProviderAddressDTO('cep', 'city', 'state', 'uf'),
     );
 
     const prisma = Sinon.createStubInstance(PrismaClient);

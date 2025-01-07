@@ -5,6 +5,7 @@ import RegisterServiceProviderDTO from '../../dtos/service-provider/register-ser
 import ValidationError from '../../errors/validation-error';
 import HashService from '../../../interfaces/services/hash-service';
 import FindFileById from '../file/find-file-by-id';
+import ServiceProviderAddress from '../../../domain/entities/service-provider-address';
 
 class RegisterServiceProvider {
   constructor(
@@ -29,10 +30,14 @@ class RegisterServiceProvider {
       contact.phone,
       contact.cellphone
     ));
+
+    const serviceProviderAddresses = !dto.address ? [] : [
+      new ServiceProviderAddress(dto.address.cep, dto.address.city, dto.address.state, dto.address.uf)
+    ];
   
     const encryptedPassword = this._hashService.hash(password);
   
-    const serviceProvider = new ServiceProvider(id, name, email, encryptedPassword, serviceProviderContacts, description, file);
+    const serviceProvider = new ServiceProvider(id, name, email, encryptedPassword, serviceProviderContacts, description, file, dto.jobMode, serviceProviderAddresses);
 
     return this._serviceProviderRepository.create(serviceProvider);
   };

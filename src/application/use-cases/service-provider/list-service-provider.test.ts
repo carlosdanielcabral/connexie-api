@@ -2,10 +2,11 @@
 import { PrismaClient } from "@prisma/client";
 import Sinon from "sinon";
 import ServiceProviderRepository from "../../../infrastructure/database/repositories/service-provider-repository";
-import ServiceProvider from "../../../domain/entities/service-provider";
+import ServiceProvider, { JobMode } from "../../../domain/entities/service-provider";
 import ServiceProviderContact from "../../../domain/entities/service-provider-contact";
 import ListServiceProvider from "./list-service-provider";
 import File from "../../../domain/entities/file";
+import ServiceProviderAddress from "../../../domain/entities/service-provider-address";
 
 describe("[Use Case] List Service Provider", () => {
     const serviceProvidersExpected = [
@@ -16,7 +17,9 @@ describe("[Use Case] List Service Provider", () => {
             'test-password',
             [new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone')],
             'Test description',
-            new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', '1')
+            new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', '1'),
+            JobMode.REMOTE,
+            [],
         ),
 
         new ServiceProvider(
@@ -26,7 +29,9 @@ describe("[Use Case] List Service Provider", () => {
             'test-password',
             [new ServiceProviderContact('test-email-02', 'test-phone-02', 'test-cellphone-02')],
             'Test 02 description',
-            new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', '1')
+            new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', '1'),
+            JobMode.BOTH,
+            [new ServiceProviderAddress('cep', 'city', 'state', 'uf', 1)],
         ),
     ]
 
