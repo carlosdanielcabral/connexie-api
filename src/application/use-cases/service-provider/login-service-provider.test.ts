@@ -2,11 +2,12 @@
 import { PrismaClient } from "@prisma/client";
 import Sinon from "sinon";
 import ServiceProviderRepository from "../../../infrastructure/database/repositories/service-provider-repository";
-import ServiceProvider from "../../../domain/entities/service-provider";
+import ServiceProvider, { JobMode } from "../../../domain/entities/service-provider";
 import ServiceProviderContact from "../../../domain/entities/service-provider-contact";
 import HashService from "../../../infrastructure/services/hash-service";
 import LoginServiceProvider from "./login-service-provider";
 import File from "../../../domain/entities/file";
+import ServiceProviderAddress from "../../../domain/entities/service-provider-address";
 
 describe("[Use Case] Login Service Provider", () => {
     const serviceProviderExpected = new ServiceProvider(
@@ -16,7 +17,9 @@ describe("[Use Case] Login Service Provider", () => {
         'test-password',
         [new ServiceProviderContact('test-email', 'test-phone', 'test-cellphone')],
         'Test description',
-        new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', '1')
+        new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', '1'),
+        JobMode.ONSITE,
+        [new ServiceProviderAddress('cep', 'city', 'state', 'uf', 1)],
     );
 
     const prisma = Sinon.createStubInstance(PrismaClient);

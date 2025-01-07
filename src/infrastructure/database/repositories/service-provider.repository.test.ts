@@ -2,9 +2,10 @@
 import { PrismaClient } from "@prisma/client";
 import Sinon from "sinon";
 import ServiceProviderRepository from "./service-provider-repository";
-import ServiceProvider from "../../../domain/entities/service-provider";
+import ServiceProvider, { JobMode } from "../../../domain/entities/service-provider";
 import ServiceProviderContact from "../../../domain/entities/service-provider-contact";
 import File from "../../../domain/entities/file";
+import ServiceProviderAddress from "../../../domain/entities/service-provider-address";
 
 describe("[Repository] Service Provider", () => {
     const file = new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', 'uuid');
@@ -17,7 +18,9 @@ describe("[Repository] Service Provider", () => {
         'test-password',
         contacts,
         'Test description',
-        file
+        file,
+        JobMode.ONSITE,
+        [new ServiceProviderAddress('cep', 'city', 'state', 'uf', 1)],
     );
 
     const prisma = new PrismaClient();
@@ -38,6 +41,26 @@ describe("[Repository] Service Provider", () => {
                         },
                     ],
                     description: serviceProviderMock.description,
+                    profileImage: {
+                        originalName: 'original-name',
+                        encoding: 'encoding',
+                        mimeType: 'mimeType',
+                        blobName: 'blobName',
+                        originalSize: 1,
+                        url: 'url',
+                        compressedSize: 0,
+                        id: 'uuid',
+                    },
+                    JobMode: serviceProviderMock.jobMode,
+                    addresses: [
+                        {
+                            cep: 'cep',
+                            city: 'city',
+                            state: 'state',
+                            uf: 'uf',
+                            id: 1,
+                        },
+                    ],
                 }),
             });
 
@@ -90,7 +113,17 @@ describe("[Repository] Service Provider", () => {
                         url: 'url',
                         compressedSize: 0,
                         id: 'uuid',
-                    }
+                    },
+                    jobMode: serviceProviderMock.jobMode,
+                    addresses: [
+                        {
+                            cep: 'cep',
+                            city: 'city',
+                            state: 'state',
+                            uf: 'uf',
+                            id: 1,
+                        },
+                    ],
                 }),
             });
 

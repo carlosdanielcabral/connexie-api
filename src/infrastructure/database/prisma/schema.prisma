@@ -22,9 +22,11 @@ model ServiceProvider {
   password       String   @db.VarChar(255)
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
+  jobMode        JobMode  @map("job_mode")
 
   contact      ServiceProviderContact[]
   profileImage File?                    @relation(fields: [profileImageId], references: [id])
+  addresses    ServiceProviderAddress[]
 
   @@map("service_provider")
 }
@@ -33,7 +35,7 @@ model ServiceProviderContact {
   id                Int             @id @default(autoincrement())
   serviceProvider   ServiceProvider @relation(fields: [serviceProviderId], references: [id])
   serviceProviderId String          @map("service_provider_id") @db.Char(36)
-  email             String          @unique @db.VarChar(255)
+  email             String          @db.VarChar(255)
   phone             String          @db.VarChar(255)
   cellphone         String          @db.VarChar(16)
   createdAt         DateTime        @default(now()) @map("created_at")
@@ -56,4 +58,24 @@ model File {
   ServiceProvider ServiceProvider[]
 
   @@map("file")
+}
+
+model ServiceProviderAddress {
+  id                Int             @id @default(autoincrement())
+  serviceProvider   ServiceProvider @relation(fields: [serviceProviderId], references: [id])
+  serviceProviderId String          @map("service_provider_id") @db.Char(36)
+  cep               String          @db.VarChar(8)
+  city              String          @db.VarChar(255)
+  state             String          @db.VarChar(20)
+  uf                String          @db.VarChar(2)
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+
+  @@map("service_provider_address")
+}
+
+enum JobMode {
+  remote @map("remote")
+  onsite @map("onsite")
+  both   @map("both")
 }

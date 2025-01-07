@@ -1,4 +1,6 @@
 import { randomUUID } from 'crypto';
+import { JobMode } from '../../../domain/entities/service-provider';
+import RegisterServiceProviderAddressDTO from './register-service-provider-address';
 import RegisterServiceProviderContactDTO from './register-service-provider-contact';
 
 class RegisterServiceProviderDTO {
@@ -10,6 +12,8 @@ class RegisterServiceProviderDTO {
     public contacts: RegisterServiceProviderContactDTO[],
     public description: string,
     public profileImage: string,
+    public jobMode: JobMode,
+    public address?: RegisterServiceProviderAddressDTO,
   ) {}
 }
 

@@ -1,6 +1,12 @@
 import File from "./file";
+import ServiceProviderAddress from "./service-provider-address";
 import ServiceProviderContact from "./service-provider-contact";
 
+export enum JobMode {
+  REMOTE = 'remote',
+  ONSITE = 'onsite',
+  BOTH = 'both',
+}
 class ServiceProvider {
     constructor(
       private _id: string,
@@ -10,6 +16,8 @@ class ServiceProvider {
       private _contacts: ServiceProviderContact[],
       private _description: string,
       private _profileImage: File | null,
+      private _jobMode: JobMode,
+      private _addresses: ServiceProviderAddress[],
     ) {
     }
 
@@ -41,6 +49,14 @@ class ServiceProvider {
       return this._profileImage;
     }
 
+    public get jobMode(): JobMode {
+      return this._jobMode;
+    }
+
+    public get addresses(): ServiceProviderAddress[] {
+      return this._addresses;
+    }
+
     public toJson = () => ({
       id: this.id,
       name: this.name,
@@ -48,6 +64,8 @@ class ServiceProvider {
       contact: this.contacts.map(contact => contact.toJson()),
       description: this.description,
       image: this.profileImage?.decryptedUrl,
+      jobMode: this.jobMode,
+      address: this.addresses.map(address => address.toJson()),
     })
   }
   
