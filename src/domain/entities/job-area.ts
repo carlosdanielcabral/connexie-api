@@ -1,5 +1,3 @@
-import e from "express";
-
 class JobArea {
     constructor(
         private _title: string,
