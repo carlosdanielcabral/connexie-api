@@ -13,6 +13,7 @@ class RegisterServiceProviderDTO {
     public description: string,
     public profileImage: string,
     public jobMode: JobMode,
+    public jobAreaId: number,
     public address?: RegisterServiceProviderAddressDTO,
   ) {}
 }

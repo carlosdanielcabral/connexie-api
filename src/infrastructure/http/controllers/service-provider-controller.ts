@@ -6,32 +6,32 @@ import ServiceProviderRepository from "../../database/repositories/service-provi
 import LoginServiceProvider from "../../../application/use-cases/service-provider/login-service-provider";
 import IFileRepository from "../../../interfaces/repositories/file-repository";
 import FileRepository from "../../database/repositories/file-repository";
-import ICryptService from "../../../interfaces/services/crypt-service";
-import CryptService from "../../services/crypt-service";
 import ITokenService from "../../../interfaces/services/token-service";
 import TokenService from "../../services/token-service";
-import IFileService from "../../../interfaces/services/file-service";
-import FileService from "../../services/file-service";
 import IHashService from "../../../interfaces/services/hash-service";
 import HashService from "../../services/hash-service";
 import FindFileById from "../../../application/use-cases/file/find-file-by-id";
 import ListServiceProvider from "../../../application/use-cases/service-provider/list-service-provider";
+import FindJobAreaById from "../../../application/use-cases/job-area/find-job-area-by-id";
+import IJobAreaRepository from "../../../interfaces/repositories/job-area-repository";
+import JobAreaRepository from "../../database/repositories/job-area-repository";
 
 class ServiceProviderController {
     constructor(
         private readonly _repository: ServiceProviderRepository = new ServiceProviderRepository(),
         private readonly _hashService: IHashService = new HashService(),
         private readonly _tokenService: ITokenService = new TokenService(),
-        private readonly _fileService: IFileService = new FileService(),
         private readonly _fileRepository: IFileRepository = new FileRepository(),
-        private readonly _cryptService: ICryptService = new CryptService(),
+        private readonly _jobAreaRepository: IJobAreaRepository = new JobAreaRepository(),
     ) {}
 
     public create = async (req: Request, res: Response) => {
         const dto: RegisterServiceProviderDTO = req.body.dto;
 
         const findFileById = new FindFileById(this._fileRepository);
-        const useCase = new RegisterServiceProvider(this._repository, this._hashService, findFileById);
+        const findJobAreaById = new FindJobAreaById(this._jobAreaRepository);
+
+        const useCase = new RegisterServiceProvider(this._repository, this._hashService, findFileById, findJobAreaById);
         const provider = await useCase.execute(dto);
 
         return res

@@ -6,6 +6,7 @@ import ServiceProvider, { JobMode } from "../../../domain/entities/service-provi
 import ServiceProviderContact from "../../../domain/entities/service-provider-contact";
 import File from "../../../domain/entities/file";
 import ServiceProviderAddress from "../../../domain/entities/service-provider-address";
+import JobArea from "../../../domain/entities/job-area";
 
 describe("[Repository] Service Provider", () => {
     const file = new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', 'uuid');
@@ -21,6 +22,7 @@ describe("[Repository] Service Provider", () => {
         file,
         JobMode.ONSITE,
         [new ServiceProviderAddress('cep', 'city', 'state', 'uf', 1)],
+        new JobArea('Test Job Area', 1),
     );
 
     const prisma = new PrismaClient();
@@ -61,6 +63,10 @@ describe("[Repository] Service Provider", () => {
                             id: 1,
                         },
                     ],
+                    jobArea: {
+                        title: 'Test Job Area',
+                        id: 1,
+                    },
                 }),
             });
 
@@ -124,6 +130,10 @@ describe("[Repository] Service Provider", () => {
                             id: 1,
                         },
                     ],
+                    jobArea: {
+                        title: 'Test Job Area',
+                        id: 1,
+                    },
                 }),
             });
 
