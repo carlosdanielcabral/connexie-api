@@ -13,7 +13,7 @@ class JobAreaController {
 
         return res
             .status(HttpStatusCode.Ok)
-            .json({ jobAreas });
+            .json({ jobAreas: jobAreas.map((jobArea) => jobArea.toJson()) });
     }
 }
 
