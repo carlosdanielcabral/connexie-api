@@ -23,6 +23,8 @@ model ServiceProvider {
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
   jobMode        JobMode  @map("job_mode")
+  jobAreaId      Int      @map("job_area_id")
+  jobArea        JobArea  @relation(fields: [jobAreaId], references: [id])
 
   contact      ServiceProviderContact[]
   profileImage File?                    @relation(fields: [profileImageId], references: [id])
@@ -72,6 +74,14 @@ model ServiceProviderAddress {
   updatedAt         DateTime        @updatedAt @map("updated_at")
 
   @@map("service_provider_address")
+}
+
+model JobArea {
+  id              Int               @id @default(autoincrement())
+  title           String            @unique
+  ServiceProvider ServiceProvider[]
+
+  @@map("job_area")
 }
 
 enum JobMode {

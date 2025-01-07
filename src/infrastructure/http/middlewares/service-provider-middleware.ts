@@ -26,7 +26,7 @@ class ServiceProviderMiddleware {
         state: z.string(),
         uf: z.string().length(2),
       }).optional(),
-
+      jobAreaId: z.number().int(),
     }).parse(req.body);
 
     req.body.dto = new RegisterServiceProviderDTO(
@@ -43,6 +43,7 @@ class ServiceProviderMiddleware {
       req.body.description,
       req.body.profileImage,
       req.body.jobMode,
+      req.body.jobAreaId,
       !req.body.address ? undefined : new RegisterServiceProviderAddressDTO(
         req.body.address.cep,
         req.body.address.city,

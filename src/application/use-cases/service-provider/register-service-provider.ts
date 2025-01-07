@@ -6,12 +6,14 @@ import ValidationError from '../../errors/validation-error';
 import HashService from '../../../interfaces/services/hash-service';
 import FindFileById from '../file/find-file-by-id';
 import ServiceProviderAddress from '../../../domain/entities/service-provider-address';
+import FindJobAreaById from '../job-area/find-job-area-by-id';
 
 class RegisterServiceProvider {
   constructor(
     private _serviceProviderRepository: IServiceProviderRepository,
     private _hashService: HashService,
     private _findFileById: FindFileById,
+    private _findJobAreaById: FindJobAreaById,
   ) {}
 
   public execute = async (dto: RegisterServiceProviderDTO): Promise<ServiceProvider> => {
@@ -25,6 +27,10 @@ class RegisterServiceProvider {
   
     if (file === null) throw new ValidationError('Profile image not found');
 
+    const jobArea = await this._findJobAreaById.execute(dto.jobAreaId);
+
+    if (jobArea === null) throw new ValidationError('Job area not found');
+
     const serviceProviderContacts = contacts.map(contact => new ServiceProviderContact(
       contact.email,
       contact.phone,
@@ -37,7 +43,18 @@ class RegisterServiceProvider {
   
     const encryptedPassword = this._hashService.hash(password);
   
-    const serviceProvider = new ServiceProvider(id, name, email, encryptedPassword, serviceProviderContacts, description, file, dto.jobMode, serviceProviderAddresses);
+    const serviceProvider = new ServiceProvider(
+      id,
+      name,
+      email,
+      encryptedPassword,
+      serviceProviderContacts,
+      description,
+      file,
+      dto.jobMode,
+      serviceProviderAddresses,
+      jobArea,
+    );
 
     return this._serviceProviderRepository.create(serviceProvider);
   };

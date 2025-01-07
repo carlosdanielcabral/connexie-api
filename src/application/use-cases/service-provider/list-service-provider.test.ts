@@ -7,6 +7,7 @@ import ServiceProviderContact from "../../../domain/entities/service-provider-co
 import ListServiceProvider from "./list-service-provider";
 import File from "../../../domain/entities/file";
 import ServiceProviderAddress from "../../../domain/entities/service-provider-address";
+import JobArea from "../../../domain/entities/job-area";
 
 describe("[Use Case] List Service Provider", () => {
     const serviceProvidersExpected = [
@@ -20,6 +21,7 @@ describe("[Use Case] List Service Provider", () => {
             new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', '1'),
             JobMode.REMOTE,
             [],
+            new JobArea('Test Job Area', 1),
         ),
 
         new ServiceProvider(
@@ -32,6 +34,7 @@ describe("[Use Case] List Service Provider", () => {
             new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', '1'),
             JobMode.BOTH,
             [new ServiceProviderAddress('cep', 'city', 'state', 'uf', 1)],
+            new JobArea('Test Job Area', 1),
         ),
     ]
 
@@ -52,5 +55,15 @@ describe("[Use Case] List Service Provider", () => {
         const response = await useCase.execute({ page: 1, limit: 10 });
 
         expect(response).toBe(serviceProvidersExpected);
+    });
+
+    test("Return empty array when service providers not found", async () => {
+        sandbox.stub(repository, 'list').returns(Promise.resolve([]));
+
+        const useCase = new ListServiceProvider(repository);
+
+        const response = await useCase.execute({ page: 1, limit: 10 });
+
+        expect(response).toEqual([]);
     });
 })

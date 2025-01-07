@@ -1,4 +1,5 @@
 import File from "./file";
+import JobArea from "./job-area";
 import ServiceProviderAddress from "./service-provider-address";
 import ServiceProviderContact from "./service-provider-contact";
 
@@ -18,6 +19,7 @@ class ServiceProvider {
       private _profileImage: File | null,
       private _jobMode: JobMode,
       private _addresses: ServiceProviderAddress[],
+      private _jobArea: JobArea,
     ) {
     }
 
@@ -57,6 +59,10 @@ class ServiceProvider {
       return this._addresses;
     }
 
+    public get jobArea(): JobArea {
+      return this._jobArea;
+    }
+
     public toJson = () => ({
       id: this.id,
       name: this.name,
@@ -66,6 +72,7 @@ class ServiceProvider {
       image: this.profileImage?.decryptedUrl,
       jobMode: this.jobMode,
       address: this.addresses.map(address => address.toJson()),
+      jobArea: this.jobArea.toJson(),
     })
   }
   

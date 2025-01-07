@@ -4,6 +4,7 @@ import IServiceProviderRepository, { ListServiceProviderFilter } from '../../../
 import ServiceProviderContact from '../../../domain/entities/service-provider-contact';
 import File from '../../../domain/entities/file';
 import ServiceProviderAddress from '../../../domain/entities/service-provider-address';
+import JobArea from '../../../domain/entities/job-area';
 
 class ServiceProviderRepository implements IServiceProviderRepository {
  constructor(private prisma: PrismaClient = new PrismaClient()) {}
@@ -34,7 +35,12 @@ class ServiceProviderRepository implements IServiceProviderRepository {
         jobMode: serviceProvider.jobMode,
         addresses: {
           create: addresses,
-        }
+        },
+        jobArea: {
+          connect: {
+            id: serviceProvider.jobArea.id,
+          },
+        },
       },
     });
 
@@ -44,7 +50,7 @@ class ServiceProviderRepository implements IServiceProviderRepository {
   public findByEmail = async (email: string): Promise<ServiceProvider | null> => {
     const serviceProvider = await this.prisma.serviceProvider.findUnique({
       where: { email },
-      include: { contact: true, profileImage: true, addresses: true },
+      include: { contact: true, profileImage: true, addresses: true, jobArea: true },
     });
 
     if (!serviceProvider) return null;
@@ -72,6 +78,7 @@ class ServiceProviderRepository implements IServiceProviderRepository {
       ),
       serviceProvider.jobMode as JobMode,
       serviceProvider.addresses.map((address) => new ServiceProviderAddress(address.cep, address.city, address.state, address.uf, address.id)),
+      new JobArea(serviceProvider.jobArea.title, serviceProvider.jobArea.id),
     );
   }
 
@@ -93,7 +100,7 @@ class ServiceProviderRepository implements IServiceProviderRepository {
     }
 
     const serviceProviders = await this.prisma.serviceProvider.findMany({
-      include: { contact: true, profileImage: true, addresses: true },
+      include: { contact: true, profileImage: true, addresses: true, jobArea: true },
       ...prismaFilter,
     });
 
@@ -120,6 +127,7 @@ class ServiceProviderRepository implements IServiceProviderRepository {
       ),
       serviceProvider.jobMode as JobMode,
       serviceProvider.addresses.map((address) => new ServiceProviderAddress(address.cep, address.city, address.state, address.uf, address.id)),
+      new JobArea(serviceProvider.jobArea.title, serviceProvider.jobArea.id),
     ));
   }
 }
