@@ -1,14 +1,11 @@
-import ServiceProvider from "../../domain/entities/service-provider";
+import Address from "../../domain/entities/address";
 
 export type ListAddressFilter ={
     keyword?: string;
 }
 
 interface AddressRepository {
-    create(serviceProvider: ServiceProvider): Promise<ServiceProvider>;
-    findByEmail(email: string): Promise<ServiceProvider | null>;
-    list(filter?: ListAddressFilter): Promise<ServiceProvider[]>;
-    count(): Promise<number>;
+    list(filter?: ListAddressFilter): Promise<Address[]>;
 }
 
 export default AddressRepository;
