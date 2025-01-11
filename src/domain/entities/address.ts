@@ -1,4 +1,4 @@
-class ServiceProviderAddress {
+class Address {
     constructor(
         private _cep: string,
         private _city: string,
@@ -35,4 +35,4 @@ class ServiceProviderAddress {
     })
 }
 
-export default ServiceProviderAddress;
+export default Address;

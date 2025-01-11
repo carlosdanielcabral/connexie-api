@@ -13,6 +13,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Address {
+  id              Int                      @id @default(autoincrement())
+  cep             String                   @db.VarChar(8)
+  city            String                   @db.VarChar(255)
+  state           String                   @db.VarChar(20)
+  uf              String                   @db.VarChar(2)
+  createdAt       DateTime                 @default(now()) @map("created_at")
+  updatedAt       DateTime                 @updatedAt @map("updated_at")
+  serviceProvider ServiceProviderAddress[]
+
+  @@unique([cep, city, state, uf])
+  @@map("address")
+}
+
 model ServiceProvider {
   id             String   @id @db.Char(36)
   name           String   @db.VarChar(255)
@@ -31,6 +45,19 @@ model ServiceProvider {
   addresses    ServiceProviderAddress[]
 
   @@map("service_provider")
+}
+
+model ServiceProviderAddress {
+  serviceProvider   ServiceProvider @relation(fields: [serviceProviderId], references: [id])
+  serviceProviderId String          @map("service_provider_id") @db.Char(36)
+  address           Address         @relation(fields: [addressId], references: [id])
+  addressId         Int             @map("address_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@id([serviceProviderId, addressId])
+  @@map("service_provider_address")
 }
 
 model ServiceProviderContact {
@@ -60,20 +87,6 @@ model File {
   ServiceProvider ServiceProvider[]
 
   @@map("file")
-}
-
-model ServiceProviderAddress {
-  id                Int             @id @default(autoincrement())
-  serviceProvider   ServiceProvider @relation(fields: [serviceProviderId], references: [id])
-  serviceProviderId String          @map("service_provider_id") @db.Char(36)
-  cep               String          @db.VarChar(8)
-  city              String          @db.VarChar(255)
-  state             String          @db.VarChar(20)
-  uf                String          @db.VarChar(2)
-  createdAt         DateTime        @default(now()) @map("created_at")
-  updatedAt         DateTime        @updatedAt @map("updated_at")
-
-  @@map("service_provider_address")
 }
 
 model JobArea {

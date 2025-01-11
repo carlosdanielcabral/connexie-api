@@ -5,8 +5,8 @@ import ServiceProviderRepository from "./service-provider-repository";
 import ServiceProvider, { JobMode } from "../../../domain/entities/service-provider";
 import ServiceProviderContact from "../../../domain/entities/service-provider-contact";
 import File from "../../../domain/entities/file";
-import ServiceProviderAddress from "../../../domain/entities/service-provider-address";
 import JobArea from "../../../domain/entities/job-area";
+import Address from "../../../domain/entities/address";
 
 describe("[Repository] Service Provider", () => {
     const file = new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', 'uuid');
@@ -21,7 +21,7 @@ describe("[Repository] Service Provider", () => {
         'Test description',
         file,
         JobMode.ONSITE,
-        [new ServiceProviderAddress('cep', 'city', 'state', 'uf', 1)],
+        [new Address('cep', 'city', 'state', 'uf', 1)],
         new JobArea('Test Job Area', 1),
     );
 
@@ -56,11 +56,13 @@ describe("[Repository] Service Provider", () => {
                     JobMode: serviceProviderMock.jobMode,
                     addresses: [
                         {
-                            cep: 'cep',
-                            city: 'city',
-                            state: 'state',
-                            uf: 'uf',
-                            id: 1,
+                            address: {
+                                cep: 'cep',
+                                city: 'city',
+                                state: 'state',
+                                uf: 'uf',
+                                id: 1,
+                            }
                         },
                     ],
                     jobArea: {
@@ -123,11 +125,13 @@ describe("[Repository] Service Provider", () => {
                     jobMode: serviceProviderMock.jobMode,
                     addresses: [
                         {
-                            cep: 'cep',
-                            city: 'city',
-                            state: 'state',
-                            uf: 'uf',
-                            id: 1,
+                            address: {
+                                cep: 'cep',
+                                city: 'city',
+                                state: 'state',
+                                uf: 'uf',
+                                id: 1,
+                            }
                         },
                     ],
                     jobArea: {

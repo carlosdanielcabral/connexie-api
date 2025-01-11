@@ -1,6 +1,6 @@
+import Address from "./address";
 import File from "./file";
 import JobArea from "./job-area";
-import ServiceProviderAddress from "./service-provider-address";
 import ServiceProviderContact from "./service-provider-contact";
 
 export enum JobMode {
@@ -18,7 +18,7 @@ class ServiceProvider {
       private _description: string,
       private _profileImage: File | null,
       private _jobMode: JobMode,
-      private _addresses: ServiceProviderAddress[],
+      private _addresses: Address[],
       private _jobArea: JobArea,
     ) {
     }
@@ -55,7 +55,7 @@ class ServiceProvider {
       return this._jobMode;
     }
 
-    public get addresses(): ServiceProviderAddress[] {
+    public get addresses(): Address[] {
       return this._addresses;
     }
 

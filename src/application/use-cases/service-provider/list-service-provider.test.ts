@@ -6,8 +6,8 @@ import ServiceProvider, { JobMode } from "../../../domain/entities/service-provi
 import ServiceProviderContact from "../../../domain/entities/service-provider-contact";
 import ListServiceProvider from "./list-service-provider";
 import File from "../../../domain/entities/file";
-import ServiceProviderAddress from "../../../domain/entities/service-provider-address";
 import JobArea from "../../../domain/entities/job-area";
+import Address from "../../../domain/entities/address";
 
 describe("[Use Case] List Service Provider", () => {
     const serviceProvidersExpected = [
@@ -33,7 +33,7 @@ describe("[Use Case] List Service Provider", () => {
             'Test 02 description',
             new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', '1'),
             JobMode.BOTH,
-            [new ServiceProviderAddress('cep', 'city', 'state', 'uf', 1)],
+            [new Address('cep', 'city', 'state', 'uf', 1)],
             new JobArea('Test Job Area', 1),
         ),
     ]
