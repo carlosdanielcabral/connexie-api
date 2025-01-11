@@ -1,13 +1,18 @@
 import { PrismaClient } from '@prisma/client';
 import Address from '../../../domain/entities/address';
 import { ListAddressFilter } from '../../../interfaces/repositories/address-repository';
+import IAddressRepository from '../../../interfaces/repositories/address-repository';
+import { formatPagination } from '../../../utils/pagination';
 
-class AddressRepository {
+class AddressRepository implements IAddressRepository {
     constructor(private prisma: PrismaClient = new PrismaClient()) { }
 
     public list = async (filter: ListAddressFilter): Promise<Address[]> => {
+        const pagination = formatPagination(filter);
+
         const prismaFilter = {
-            take: 10,
+            skip: pagination.page,
+            take: pagination.limit,
             where: {},
         };
 

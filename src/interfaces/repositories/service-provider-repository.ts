@@ -1,4 +1,5 @@
 import ServiceProvider from "../../domain/entities/service-provider";
+import { Pagination } from "../../utils/pagination";
 
 interface ServiceProviderRepository {
     create(serviceProvider: ServiceProvider): Promise<ServiceProvider>;
@@ -7,10 +8,8 @@ interface ServiceProviderRepository {
     count(): Promise<number>;
 }
 
-export type ListServiceProviderFilter ={
+export type ListServiceProviderFilter = Pagination & {
     keyword?: string;
-    page: number;
-    limit: number;
-}
+};
 
 export default ServiceProviderRepository;

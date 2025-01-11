@@ -5,6 +5,7 @@ import ServiceProviderContact from '../../../domain/entities/service-provider-co
 import File from '../../../domain/entities/file';
 import JobArea from '../../../domain/entities/job-area';
 import Address from '../../../domain/entities/address';
+import { formatPagination } from '../../../utils/pagination';
 
 class ServiceProviderRepository implements IServiceProviderRepository {
  constructor(private prisma: PrismaClient = new PrismaClient()) {}
@@ -102,9 +103,11 @@ class ServiceProviderRepository implements IServiceProviderRepository {
   }
 
   public list = async (filter: ListServiceProviderFilter = { page: 1, limit: 10 }): Promise<ServiceProvider[]> => {
+    const pagination = formatPagination(filter);
+  
     const prismaFilter = {
-      skip: (filter.page - 1) * filter.limit,
-      take: filter.limit,
+      skip: pagination.page,
+      take: pagination.limit,
       where: {},
     };
 
