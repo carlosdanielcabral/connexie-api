@@ -34,7 +34,6 @@ class ServiceProviderMiddleware {
       req.body.name,
       req.body.email,
       req.body.password,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       req.body.contacts ? [new RegisterServiceProviderContactDTO(
         req.body.contacts.email,
         req.body.contacts.phone,
@@ -69,21 +68,26 @@ class ServiceProviderMiddleware {
       keyword: z.string().optional(),
       page: z.preprocess(
         (a) => parseInt(a as string, 10),
-        z.number().int().positive().default(100)
-      ),
+        z.number().int().positive()
+      ).optional(),
       limit: z.preprocess(
         (a) => parseInt(a as string, 10),
-        z.number().int().positive().default(100)
-      ),
+        z.number().int().positive()
+      ).optional(),
     }).parse(req.query);
 
-    const filter: ListServiceProviderFilter = {
-      page: Number(req.query.page ?? 1),
-      limit: Number(req.query.limit ?? 2),
-    };
+    const filter: ListServiceProviderFilter = {};
 
     if (req.query.keyword) {
       filter.keyword = req.query.keyword.toString();
+    }
+
+    if (req.query.page) {
+      filter.page = Number(req.query.page);
+    }
+
+    if (req.query.limit) {
+      filter.limit = Number(req.query.limit);
     }
 
     req.body = { filter };

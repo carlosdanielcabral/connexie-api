@@ -5,7 +5,7 @@ class CountServiceProvider {
     private readonly _serviceProviderRepository: IServiceProviderRepository,
 ) {}
 
-  public execute = async (): Promise<Number> => {
+  public execute = async (): Promise<number> => {
     const serviceProviders = await this._serviceProviderRepository.count();
 
     return serviceProviders;
