@@ -32,6 +32,7 @@ class Address {
         city: this.city,
         state: this.state,
         uf: this.uf,
+        id: this.id,
     })
 }
 
