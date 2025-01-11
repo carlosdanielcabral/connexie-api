@@ -130,6 +130,12 @@ class ServiceProviderRepository implements IServiceProviderRepository {
       new JobArea(serviceProvider.jobArea.title, serviceProvider.jobArea.id),
     ));
   }
+
+  public count = async (): Promise<number> => {
+    const count = await this.prisma.serviceProvider.count();
+
+    return count;
+  }
 }
 
 export default ServiceProviderRepository;

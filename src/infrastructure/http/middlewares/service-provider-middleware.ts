@@ -12,11 +12,11 @@ class ServiceProviderMiddleware {
       name: z.string(),
       email: z.string().email(),
       password: z.string().min(8),
-      contacts: z.array(z.object({
+      contacts: z.object({
         email: z.string().email(),
         phone: z.string(),
         cellphone: z.string(),
-      })).optional(),
+      }).optional(),
       description: z.string(),
       profileImage: z.string(),
       jobMode: z.enum(['remote', 'onsite', 'both']),
@@ -35,11 +35,11 @@ class ServiceProviderMiddleware {
       req.body.email,
       req.body.password,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      req.body.contacts?.map((contact: any) => new RegisterServiceProviderContactDTO(
-        contact.email,
-        contact.phone,
-        contact.cellphone
-      )) ?? [],
+      req.body.contacts ? [new RegisterServiceProviderContactDTO(
+        req.body.contacts.email,
+        req.body.contacts.phone,
+        req.body.contacts.cellphone
+      )] : [],
       req.body.description,
       req.body.profileImage,
       req.body.jobMode,
@@ -67,13 +67,19 @@ class ServiceProviderMiddleware {
   public list = (req: Request, res: Response, next: NextFunction) => {
     z.object({
       keyword: z.string().optional(),
-      page: z.number().int().positive().default(1),
-      limit: z.number().int().positive().default(10),
+      page: z.preprocess(
+        (a) => parseInt(a as string, 10),
+        z.number().int().positive().default(100)
+      ),
+      limit: z.preprocess(
+        (a) => parseInt(a as string, 10),
+        z.number().int().positive().default(100)
+      ),
     }).parse(req.query);
 
     const filter: ListServiceProviderFilter = {
       page: Number(req.query.page ?? 1),
-      limit: Number(req.query.limit ?? 10),
+      limit: Number(req.query.limit ?? 2),
     };
 
     if (req.query.keyword) {
