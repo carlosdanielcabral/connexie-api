@@ -148,4 +148,97 @@ describe("[Repository] Service Provider", () => {
             expect(JSON.stringify(response)).toBe(JSON.stringify(serviceProviderMock));
         });
     });
+
+    describe("03. List", () => {
+        test("Return service providers after success search", async () => {
+            Sinon.stub(prisma, 'serviceProvider').value({
+                findMany: Sinon.stub().resolves([
+                    {
+                        id: serviceProviderMock.id,
+                        name: serviceProviderMock.name,
+                        email: serviceProviderMock.email,
+                        password: serviceProviderMock.password,
+                        contact: [
+                            {
+                                email: serviceProviderMock.contacts[0].email,
+                                phone: serviceProviderMock.contacts[0].phone,
+                                cellphone: serviceProviderMock.contacts[0].cellphone,
+                            },
+                        ],
+                        description: serviceProviderMock.description,
+                        profileImage: {
+                            originalName: 'original-name',
+                            encoding: 'encoding',
+                            mimeType: 'mimeType',
+                            blobName: 'blobName',
+                            originalSize: 1,
+                            url: 'url',
+                            compressedSize: 0,
+                            id: 'uuid',
+                        },
+                        jobMode: serviceProviderMock.jobMode,
+                        addresses: [
+                            {
+                                address: {
+                                    cep: 'cep',
+                                    city: 'city',
+                                    state: 'state',
+                                    uf: 'uf',
+                                    id: 1,
+                                }
+                            },
+                        ],
+                        jobArea: {
+                            title: 'Test Job Area',
+                            id: 1,
+                        },
+                    },
+                ]),
+            });
+
+            const repository = new ServiceProviderRepository(prisma);
+
+            const response = await repository.list();
+
+            expect(JSON.stringify(response)).toBe(JSON.stringify([serviceProviderMock]));
+        });
+
+        test("Return empty array if no service provider found", async () => {
+            Sinon.stub(prisma, 'serviceProvider').value({
+                findMany: Sinon.stub().resolves([]),
+            });
+
+            const repository = new ServiceProviderRepository(prisma);
+
+            const response = await repository.list();
+
+            expect(response).toStrictEqual([]);
+        });
+    });
+
+    describe("04. Count", () => {
+        test("Return number of service providers", async () => {
+            Sinon.stub(prisma, 'serviceProvider').value({
+                count: Sinon.stub().resolves(1),
+            });
+
+            const repository = new ServiceProviderRepository(prisma);
+
+            const response = await repository.count();
+
+            expect(response).toBe(1);
+        });
+
+        test("Return 0 if no service provider found", async () => {
+            Sinon.stub(prisma, 'serviceProvider').value({
+                count: Sinon.stub().resolves(0),
+            });
+
+            const repository = new ServiceProviderRepository(prisma);
+
+            const response = await repository.count();
+
+            expect(response).toBe(0);
+        });
+    });
 })
