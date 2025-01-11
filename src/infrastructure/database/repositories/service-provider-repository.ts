@@ -121,6 +121,31 @@ class ServiceProviderRepository implements IServiceProviderRepository {
       };
     }
 
+    if (filter.addressId) {
+      prismaFilter.where = {
+        ...prismaFilter.where,
+        addresses: {
+          some: {
+            addressId: filter.addressId,
+          },
+        },
+      };
+    }
+
+    if (filter.jobAreaId) {
+      prismaFilter.where = {
+        ...prismaFilter.where,
+        jobAreaId: filter.jobAreaId,
+      };
+    }
+
+    if (filter.jobMode) {
+      prismaFilter.where = {
+        ...prismaFilter.where,
+        jobMode: filter.jobMode,
+      };
+    }
+  
     const serviceProviders = await this.prisma.serviceProvider.findMany({
       include: {
         contact: true,

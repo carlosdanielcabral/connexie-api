@@ -5,6 +5,7 @@ import RegisterServiceProviderContactDTO from "../../../application/dtos/service
 import { randomUUID } from "crypto";
 import { ListServiceProviderFilter } from "../../../interfaces/repositories/service-provider-repository";
 import RegisterServiceProviderAddressDTO from "../../../application/dtos/service-provider/register-service-provider-address";
+import { JobMode } from "../../../domain/entities/service-provider";
 
 class ServiceProviderMiddleware {
   public create = (req: Request, res: Response, next: NextFunction) => {
@@ -74,6 +75,15 @@ class ServiceProviderMiddleware {
         (a) => parseInt(a as string, 10),
         z.number().int().positive()
       ).optional(),
+      addressId: z.preprocess(
+        (a) => parseInt(a as string, 10),
+        z.number().int().positive(),
+      ).optional(),
+      jobAreaId: z.preprocess(
+        (a) => parseInt(a as string, 10),
+        z.number().int().positive(),
+      ).optional(),
+      jobMode: z.enum([JobMode.BOTH, JobMode.ONSITE, JobMode.REMOTE]).optional(),
     }).parse(req.query);
 
     const filter: ListServiceProviderFilter = {};
@@ -88,6 +98,18 @@ class ServiceProviderMiddleware {
 
     if (req.query.limit) {
       filter.limit = Number(req.query.limit);
+    }
+
+    if (req.query.addressId) {
+      filter.addressId = Number(req.query.addressId);
+    }
+
+    if (req.query.jobAreaId) {
+      filter.jobAreaId = Number(req.query.jobAreaId);
+    }
+
+    if (req.query.jobMode) {
+      filter.jobMode = req.query.jobMode as JobMode;
     }
 
     req.body = { filter };

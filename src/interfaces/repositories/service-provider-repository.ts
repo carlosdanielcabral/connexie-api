@@ -1,4 +1,4 @@
-import ServiceProvider from "../../domain/entities/service-provider";
+import ServiceProvider, { JobMode } from "../../domain/entities/service-provider";
 import { Pagination } from "../../utils/pagination";
 
 interface ServiceProviderRepository {
@@ -10,6 +10,9 @@ interface ServiceProviderRepository {
 
 export type ListServiceProviderFilter = Pagination & {
     keyword?: string;
+    addressId?: number;
+    jobAreaId?: number;
+    jobMode?: JobMode;
 };
 
 export default ServiceProviderRepository;

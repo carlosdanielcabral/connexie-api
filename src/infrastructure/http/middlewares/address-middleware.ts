@@ -12,11 +12,11 @@ class AddressMiddleware {
       ).optional(),
       limit: z.preprocess(
         (a) => parseInt(a as string, 10),
-        z.number().int().positive().optional(),
+        z.number().int().positive(),
       ).optional(),
     }).parse(req.query);
 
-    const filter: ListAddressFilter = {};
+    const filter: ListAddressFilter = { };
 
     if (req.query.keyword) {
       filter.keyword = req.query.keyword.toString();
