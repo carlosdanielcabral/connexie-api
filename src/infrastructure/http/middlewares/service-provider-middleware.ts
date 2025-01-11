@@ -5,6 +5,7 @@ import RegisterServiceProviderContactDTO from "../../../application/dtos/service
 import { randomUUID } from "crypto";
 import { ListServiceProviderFilter } from "../../../interfaces/repositories/service-provider-repository";
 import RegisterServiceProviderAddressDTO from "../../../application/dtos/service-provider/register-service-provider-address";
+import { JobMode } from "../../../domain/entities/service-provider";
 
 class ServiceProviderMiddleware {
   public create = (req: Request, res: Response, next: NextFunction) => {
@@ -12,11 +13,11 @@ class ServiceProviderMiddleware {
       name: z.string(),
       email: z.string().email(),
       password: z.string().min(8),
-      contacts: z.array(z.object({
+      contacts: z.object({
         email: z.string().email(),
         phone: z.string(),
         cellphone: z.string(),
-      })).optional(),
+      }).optional(),
       description: z.string(),
       profileImage: z.string(),
       jobMode: z.enum(['remote', 'onsite', 'both']),
@@ -34,12 +35,11 @@ class ServiceProviderMiddleware {
       req.body.name,
       req.body.email,
       req.body.password,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      req.body.contacts?.map((contact: any) => new RegisterServiceProviderContactDTO(
-        contact.email,
-        contact.phone,
-        contact.cellphone
-      )) ?? [],
+      req.body.contacts ? [new RegisterServiceProviderContactDTO(
+        req.body.contacts.email,
+        req.body.contacts.phone,
+        req.body.contacts.cellphone
+      )] : [],
       req.body.description,
       req.body.profileImage,
       req.body.jobMode,
@@ -67,17 +67,49 @@ class ServiceProviderMiddleware {
   public list = (req: Request, res: Response, next: NextFunction) => {
     z.object({
       keyword: z.string().optional(),
-      page: z.number().int().positive().default(1),
-      limit: z.number().int().positive().default(10),
+      page: z.preprocess(
+        (a) => parseInt(a as string, 10),
+        z.number().int().positive()
+      ).optional(),
+      limit: z.preprocess(
+        (a) => parseInt(a as string, 10),
+        z.number().int().positive()
+      ).optional(),
+      addressId: z.preprocess(
+        (a) => parseInt(a as string, 10),
+        z.number().int().positive(),
+      ).optional(),
+      jobAreaId: z.preprocess(
+        (a) => parseInt(a as string, 10),
+        z.number().int().positive(),
+      ).optional(),
+      jobMode: z.enum([JobMode.BOTH, JobMode.ONSITE, JobMode.REMOTE]).optional(),
     }).parse(req.query);
 
-    const filter: ListServiceProviderFilter = {
-      page: Number(req.query.page ?? 1),
-      limit: Number(req.query.limit ?? 10),
-    };
+    const filter: ListServiceProviderFilter = {};
 
     if (req.query.keyword) {
       filter.keyword = req.query.keyword.toString();
+    }
+
+    if (req.query.page) {
+      filter.page = Number(req.query.page);
+    }
+
+    if (req.query.limit) {
+      filter.limit = Number(req.query.limit);
+    }
+
+    if (req.query.addressId) {
+      filter.addressId = Number(req.query.addressId);
+    }
+
+    if (req.query.jobAreaId) {
+      filter.jobAreaId = Number(req.query.jobAreaId);
+    }
+
+    if (req.query.jobMode) {
+      filter.jobMode = req.query.jobMode as JobMode;
     }
 
     req.body = { filter };

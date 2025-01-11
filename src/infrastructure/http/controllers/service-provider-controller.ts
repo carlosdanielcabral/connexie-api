@@ -15,6 +15,7 @@ import ListServiceProvider from "../../../application/use-cases/service-provider
 import FindJobAreaById from "../../../application/use-cases/job-area/find-job-area-by-id";
 import IJobAreaRepository from "../../../interfaces/repositories/job-area-repository";
 import JobAreaRepository from "../../database/repositories/job-area-repository";
+import CountServiceProvider from "../../../application/use-cases/service-provider/count-service-provider";
 
 class ServiceProviderController {
     constructor(
@@ -55,10 +56,12 @@ class ServiceProviderController {
         const { filter } = req.body;
 
         const useCase = new ListServiceProvider(this._repository);
+        const countUseCase = new CountServiceProvider(this._repository);
 
         const providers = await useCase.execute(filter);
+        const total = await countUseCase.execute();
 
-        return res.status(HttpStatusCode.Ok).json({ providers: providers.map((provider) => provider.toJson()) });
+        return res.status(HttpStatusCode.Ok).json({ total, providers: providers.map((provider) => provider.toJson()) });
     }
 }
 

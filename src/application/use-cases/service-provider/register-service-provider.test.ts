@@ -13,11 +13,11 @@ import fs from 'fs/promises';
 import FileRepository from "../../../infrastructure/database/repositories/file-repository";
 import CryptService from "../../../infrastructure/services/crypt-service";
 import FindFileById from "../file/find-file-by-id";
-import ServiceProviderAddress from "../../../domain/entities/service-provider-address";
 import RegisterServiceProviderAddressDTO from "../../dtos/service-provider/register-service-provider-address";
 import JobArea from "../../../domain/entities/job-area";
 import JobAreaRepository from "../../../infrastructure/database/repositories/job-area-repository";
 import FindJobAreaById from "../job-area/find-job-area-by-id";
+import Address from "../../../domain/entities/address";
 
 describe("[Use Case] Register Service Provider", () => {
     const file = new File('encrypted', 'encoding', 'mimeType', 'encrypted', 1, 0, 'encrypted', 'uuid');
@@ -32,7 +32,7 @@ describe("[Use Case] Register Service Provider", () => {
         'Test description',
         file,
         JobMode.ONSITE,
-        [new ServiceProviderAddress('cep', 'city', 'state', 'uf', 1)],
+        [new Address('cep', 'city', 'state', 'uf', 1)],
         new JobArea('Test Job Area', 1),
     );
 

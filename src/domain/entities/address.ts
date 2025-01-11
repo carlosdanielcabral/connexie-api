@@ -1,4 +1,4 @@
-class ServiceProviderAddress {
+class Address {
     constructor(
         private _cep: string,
         private _city: string,
@@ -32,7 +32,8 @@ class ServiceProviderAddress {
         city: this.city,
         state: this.state,
         uf: this.uf,
+        id: this.id,
     })
 }
 
-export default ServiceProviderAddress;
+export default Address;

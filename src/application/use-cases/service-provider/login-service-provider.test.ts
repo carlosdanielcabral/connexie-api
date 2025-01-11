@@ -7,8 +7,8 @@ import ServiceProviderContact from "../../../domain/entities/service-provider-co
 import HashService from "../../../infrastructure/services/hash-service";
 import LoginServiceProvider from "./login-service-provider";
 import File from "../../../domain/entities/file";
-import ServiceProviderAddress from "../../../domain/entities/service-provider-address";
 import JobArea from "../../../domain/entities/job-area";
+import Address from "../../../domain/entities/address";
 
 describe("[Use Case] Login Service Provider", () => {
     const serviceProviderExpected = new ServiceProvider(
@@ -20,7 +20,7 @@ describe("[Use Case] Login Service Provider", () => {
         'Test description',
         new File('original-name', 'encoding', 'mimeType', 'blobName', 1, 0, 'url', '1'),
         JobMode.ONSITE,
-        [new ServiceProviderAddress('cep', 'city', 'state', 'uf', 1)],
+        [new Address('cep', 'city', 'state', 'uf', 1)],
         new JobArea('Test Job Area', 1),
     );
 

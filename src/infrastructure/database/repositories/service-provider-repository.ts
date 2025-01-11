@@ -3,8 +3,9 @@ import ServiceProvider, { JobMode } from '../../../domain/entities/service-provi
 import IServiceProviderRepository, { ListServiceProviderFilter } from '../../../interfaces/repositories/service-provider-repository';
 import ServiceProviderContact from '../../../domain/entities/service-provider-contact';
 import File from '../../../domain/entities/file';
-import ServiceProviderAddress from '../../../domain/entities/service-provider-address';
 import JobArea from '../../../domain/entities/job-area';
+import Address from '../../../domain/entities/address';
+import { formatPagination } from '../../../utils/pagination';
 
 class ServiceProviderRepository implements IServiceProviderRepository {
  constructor(private prisma: PrismaClient = new PrismaClient()) {}
@@ -34,7 +35,19 @@ class ServiceProviderRepository implements IServiceProviderRepository {
         },
         jobMode: serviceProvider.jobMode,
         addresses: {
-          create: addresses,
+          create: addresses.map((address) => ({
+            address: {
+              connectOrCreate: {
+                where: { cep_city_state_uf: { cep: address.cep, city: address.city, state: address.state, uf: address.uf } },
+                create: {
+                  cep: address.cep,
+                  city: address.city,
+                  state: address.state,
+                  uf: address.uf,
+                }
+              },
+            }
+          }))
         },
         jobArea: {
           connect: {
@@ -50,7 +63,14 @@ class ServiceProviderRepository implements IServiceProviderRepository {
   public findByEmail = async (email: string): Promise<ServiceProvider | null> => {
     const serviceProvider = await this.prisma.serviceProvider.findUnique({
       where: { email },
-      include: { contact: true, profileImage: true, addresses: true, jobArea: true },
+      include: {
+        contact: true,
+        profileImage: true,
+        addresses: {
+          include: { address: true }
+        },
+        jobArea: true
+      },
     });
 
     if (!serviceProvider) return null;
@@ -77,15 +97,17 @@ class ServiceProviderRepository implements IServiceProviderRepository {
         serviceProvider.profileImage.id,
       ),
       serviceProvider.jobMode as JobMode,
-      serviceProvider.addresses.map((address) => new ServiceProviderAddress(address.cep, address.city, address.state, address.uf, address.id)),
+      serviceProvider.addresses.map(({ address }) => new Address(address.cep, address.city, address.state, address.uf, address.id)),
       new JobArea(serviceProvider.jobArea.title, serviceProvider.jobArea.id),
     );
   }
 
   public list = async (filter: ListServiceProviderFilter = { page: 1, limit: 10 }): Promise<ServiceProvider[]> => {
+    const pagination = formatPagination(filter);
+  
     const prismaFilter = {
-      skip: (filter.page - 1) * filter.limit,
-      take: filter.limit,
+      skip: pagination.page,
+      take: pagination.limit,
       where: {},
     };
 
@@ -99,8 +121,40 @@ class ServiceProviderRepository implements IServiceProviderRepository {
       };
     }
 
+    if (filter.addressId) {
+      prismaFilter.where = {
+        ...prismaFilter.where,
+        addresses: {
+          some: {
+            addressId: filter.addressId,
+          },
+        },
+      };
+    }
+
+    if (filter.jobAreaId) {
+      prismaFilter.where = {
+        ...prismaFilter.where,
+        jobAreaId: filter.jobAreaId,
+      };
+    }
+
+    if (filter.jobMode) {
+      prismaFilter.where = {
+        ...prismaFilter.where,
+        jobMode: filter.jobMode,
+      };
+    }
+  
     const serviceProviders = await this.prisma.serviceProvider.findMany({
-      include: { contact: true, profileImage: true, addresses: true, jobArea: true },
+      include: {
+        contact: true,
+        profileImage: true,
+        addresses: {
+          include: { address: true }
+        },
+        jobArea: true
+      },
       ...prismaFilter,
     });
 
@@ -126,9 +180,15 @@ class ServiceProviderRepository implements IServiceProviderRepository {
         serviceProvider.profileImage.id,
       ),
       serviceProvider.jobMode as JobMode,
-      serviceProvider.addresses.map((address) => new ServiceProviderAddress(address.cep, address.city, address.state, address.uf, address.id)),
+      serviceProvider.addresses.map(({ address }) => new Address(address.cep, address.city, address.state, address.uf, address.id)),
       new JobArea(serviceProvider.jobArea.title, serviceProvider.jobArea.id),
     ));
+  }
+
+  public count = async (): Promise<number> => {
+    const count = await this.prisma.serviceProvider.count();
+
+    return count;
   }
 }
 
