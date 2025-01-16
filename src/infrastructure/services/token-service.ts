@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 class TokenService implements TokenService {
   private readonly _secret: string = process.env.JWT_SECRET || 'secret';
@@ -6,7 +6,7 @@ class TokenService implements TokenService {
 
   public generate = (payload: object): string => jwt.sign(payload, this._secret, { expiresIn: this._expiresIn });
 
-  public validate = (token: string) => jwt.verify(token, this._secret);
+  public validate = (token: string) => jwt.verify(token, this._secret) as JwtPayload;
 }
 
 export default TokenService;

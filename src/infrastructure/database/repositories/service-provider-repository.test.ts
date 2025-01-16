@@ -241,4 +241,122 @@ describe("[Repository] Service Provider", () => {
             expect(response).toBe(0);
         });
     });
+
+    describe("05. Update", () => {
+        test("Return service provider after success update", async () => {
+            Sinon.stub(prisma, 'serviceProvider').value({
+                update: Sinon.stub().resolves({
+                    id: serviceProviderMock.id,
+                    name: serviceProviderMock.name,
+                    email: serviceProviderMock.email,
+                    password: serviceProviderMock.password,
+                    contact: [
+                        {
+                            email: serviceProviderMock.contacts[0].email,
+                            phone: serviceProviderMock.contacts[0].phone,
+                            cellphone: serviceProviderMock.contacts[0].cellphone,
+                        },
+                    ],
+                    description: serviceProviderMock.description,
+                    profileImage: {
+                        originalName: 'original-name',
+                        encoding: 'encoding',
+                        mimeType: 'mimeType',
+                        blobName: 'blobName',
+                        originalSize: 1,
+                        url: 'url',
+                        compressedSize: 0,
+                        id: 'uuid',
+                    },
+                    jobMode: serviceProviderMock.jobMode,
+                    addresses: [
+                        {
+                            address: {
+                                cep: 'cep',
+                                city: 'city',
+                                state: 'state',
+                                uf: 'uf',
+                                id: 1,
+                            }
+                        },
+                    ],
+                    jobArea: {
+                        title: 'Test Job Area',
+                        id: 1,
+                    },
+                }),
+            });
+
+            const repository = new ServiceProviderRepository(prisma);
+
+            const response = await repository.update(serviceProviderMock);
+
+            expect(response).toBe(serviceProviderMock);
+        });
+    });
+
+    describe("06. Find by id", () => {
+        test("Return service provider after success search", async () => {
+            Sinon.stub(prisma, 'serviceProvider').value({
+                findUnique: Sinon.stub().resolves({
+                    id: serviceProviderMock.id,
+                    name: serviceProviderMock.name,
+                    email: serviceProviderMock.email,
+                    password: serviceProviderMock.password,
+                    contact: [
+                        {
+                            email: serviceProviderMock.contacts[0].email,
+                            phone: serviceProviderMock.contacts[0].phone,
+                            cellphone: serviceProviderMock.contacts[0].cellphone,
+                        },
+                    ],
+                    description: serviceProviderMock.description,
+                    profileImage: {
+                        originalName: 'original-name',
+                        encoding: 'encoding',
+                        mimeType: 'mimeType',
+                        blobName: 'blobName',
+                        originalSize: 1,
+                        url: 'url',
+                        compressedSize: 0,
+                        id: 'uuid',
+                    },
+                    jobMode: serviceProviderMock.jobMode,
+                    addresses: [
+                        {
+                            address: {
+                                cep: 'cep',
+                                city: 'city',
+                                state: 'state',
+                                uf: 'uf',
+                                id: 1,
+                            }
+                        },
+                    ],
+                    jobArea: {
+                        title: 'Test Job Area',
+                        id: 1,
+                    },
+                }),
+            });
+
+            const repository = new ServiceProviderRepository(prisma);
+
+            const response = await repository.findById(serviceProviderMock.id);
+
+            expect(JSON.stringify(response)).toBe(JSON.stringify(serviceProviderMock));
+        });
+
+        test("Return null if service provider not found", async () => {
+            Sinon.stub(prisma, 'serviceProvider').value({
+                findUnique: Sinon.stub().resolves(null),
+            });
+
+            const repository = new ServiceProviderRepository(prisma);
+
+            const response = await repository.findById(serviceProviderMock.id);
+
+            expect(response).toBeNull();
+        });
+    });
 })

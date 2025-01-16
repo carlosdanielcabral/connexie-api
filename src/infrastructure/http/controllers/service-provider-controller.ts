@@ -16,6 +16,7 @@ import FindJobAreaById from "../../../application/use-cases/job-area/find-job-ar
 import IJobAreaRepository from "../../../interfaces/repositories/job-area-repository";
 import JobAreaRepository from "../../database/repositories/job-area-repository";
 import CountServiceProvider from "../../../application/use-cases/service-provider/count-service-provider";
+import UpdateServiceProvider from "../../../application/use-cases/service-provider/update-service-provider";
 
 class ServiceProviderController {
     constructor(
@@ -63,6 +64,18 @@ class ServiceProviderController {
 
         return res.status(HttpStatusCode.Ok).json({ total, providers: providers.map((provider) => provider.toJson()) });
     }
+
+    public update = async (req: Request, res: Response) => {
+        const { dto, user } = req.body;
+
+        const findFileById = new FindFileById(this._fileRepository);
+        const findJobAreaById = new FindJobAreaById(this._jobAreaRepository);
+
+        const useCase = new UpdateServiceProvider(this._repository, this._hashService, findFileById, findJobAreaById);
+        const provider = await useCase.execute(dto, user);
+
+        return res.status(HttpStatusCode.Ok).json(provider.toJson());
+    };
 }
 
 export default ServiceProviderController;
