@@ -74,7 +74,7 @@ class ServiceProviderController {
         const useCase = new UpdateServiceProvider(this._repository, this._hashService, findFileById, findJobAreaById);
         const provider = await useCase.execute(dto, user);
 
-        return res.status(HttpStatusCode.Ok).json(provider.toJson());
+        return res.status(HttpStatusCode.Ok).json({ provider: provider.toJson() });
     };
 }
 

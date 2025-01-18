@@ -8,6 +8,7 @@ import RegisterServiceProviderAddressDTO from "../../../application/dtos/service
 import { JobMode } from "../../../domain/entities/service-provider";
 import UpdateServiceProviderAddressDTO from "../../../application/dtos/service-provider/update-service-provider-address";
 import UpdateServiceProviderContactDTO from "../../../application/dtos/service-provider/update-service-provider-contact";
+import UpdateServiceProviderDTO from "../../../application/dtos/service-provider/update-service-provider";
 
 class ServiceProviderMiddleware {
   public create = (req: Request, res: Response, next: NextFunction) => {
@@ -122,7 +123,7 @@ class ServiceProviderMiddleware {
   public update = (req: Request, res: Response, next: NextFunction) => {
     z.object({
       name: z.string().optional(),
-      password: z.string().optional(),
+      password: z.string().min(8).optional(),
       contacts: z.array(z.object({
         email: z.string().email(),
         phone: z.string(),
@@ -140,25 +141,25 @@ class ServiceProviderMiddleware {
       }).optional(),
     }).parse(req.body);
 
-    req.body.dto = {
-      name: req.body.name,
-      password: req.body.password,
-      contacts: req.body.contacts ? req.body.contacts.map((contact: any) => new UpdateServiceProviderContactDTO(
+    req.body.dto = new UpdateServiceProviderDTO(
+      req.body.name,
+      req.body.contacts ? req.body.contacts.map((contact: any) => new UpdateServiceProviderContactDTO(
         contact.email,
         contact.phone,
         contact.cellphone
       )) : [],
-      description: req.body.description,
-      profileImage: req.body.profileImage,
-      jobMode: req.body.jobMode,
-      jobAreaId: req.body.jobAreaId,
-      address: req.body.address ? new UpdateServiceProviderAddressDTO(
+      req.body.description,
+      req.body.jobMode,
+      req.body.jobAreaId,
+      req.body.profileImage,
+      req.body.address ? new UpdateServiceProviderAddressDTO(
         req.body.address.cep,
         req.body.address.city,
         req.body.address.state,
         req.body.address.uf,
       ) : undefined,
-    };
+      req.body.password,
+    );
 
     return next();
   }

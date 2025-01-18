@@ -20,7 +20,7 @@ class UpdateServiceProvider {
   public execute = async (dto: UpdateServiceProviderDTO, who: ServiceProvider): Promise<ServiceProvider> => {
     const { name, password, contacts, description, profileImage } = dto;
 
-    const file = await this._findFileById.execute(profileImage);
+    const file = profileImage ? await this._findFileById.execute(profileImage) : who.profileImage;
   
     if (file === null) throw new ValidationError('Profile image not found');
 
@@ -32,14 +32,13 @@ class UpdateServiceProvider {
       contact.email,
       contact.phone,
       contact.cellphone,
-      who.contacts[0].id,
     ));
 
     const serviceProviderAddresses = !dto.address ? [] : [
       new Address(dto.address.cep, dto.address.city, dto.address.state, dto.address.uf)
     ];
   
-    const encryptedPassword = this._hashService.hash(password);
+    const encryptedPassword = password ? this._hashService.hash(password) : who.password;
   
     const serviceProvider = new ServiceProvider(
       who.id,

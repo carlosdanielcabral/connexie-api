@@ -197,21 +197,33 @@ class ServiceProviderRepository implements IServiceProviderRepository {
     const contacts = serviceProvider.contacts.map((contact) => contact.toJson());
     const addresses = serviceProvider.addresses.map((address) => address.toJson());
 
+    // clear previous contacts
+    await this.prisma.serviceProviderContact.deleteMany({
+      where: { serviceProviderId: serviceProvider.id },
+    });
+
+    // clear previous addresses
+    await this.prisma.serviceProviderAddress.deleteMany({
+      where: { serviceProviderId: serviceProvider.id },
+    });
+
+    // update the data with the new relations
     await this.prisma.serviceProvider.update({
       where: { id: serviceProvider.id },
       include: {
         contact: true,
-        addresses: true,
+        addresses: {
+          include: {
+            address: true,
+          },
+        },
       },
       data: {
         name: serviceProvider.name,
         email: serviceProvider.email,
         password: serviceProvider.password,
         contact: {
-          update: contacts.map((contact) => ({
-            where: { id: contact.id },
-            data: contact,
-          })),
+          create: contacts,
         },
         description: serviceProvider.description,
         profileImage: {

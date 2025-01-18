@@ -50,15 +50,14 @@ describe("[Use Case] Update Service Provider", () => {
     );
 
     const dto = new UpdateServiceProviderDTO(
-        'test-id',
         'Test Name Edited',
-        'test-password',
         [new UpdateServiceProviderContactDTO('test-email-edited', 'test-phone-edited', 'test-cellphone-edited')],
         'Test description edited',
-        'uuid',
         JobMode.ONSITE,
         2,
+        'uuid',
         new UpdateServiceProviderAddressDTO('cep', 'city', 'state', 'uf'),
+        'test-password',
     );
 
     const prisma = Sinon.createStubInstance(PrismaClient);

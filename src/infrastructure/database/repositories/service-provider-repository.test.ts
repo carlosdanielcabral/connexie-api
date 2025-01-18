@@ -244,6 +244,14 @@ describe("[Repository] Service Provider", () => {
 
     describe("05. Update", () => {
         test("Return service provider after success update", async () => {
+            Sinon.stub(prisma, 'serviceProviderAddress').value({
+                deleteMany: Sinon.stub().resolves(),
+            });
+
+            Sinon.stub(prisma, 'serviceProviderContact').value({
+                deleteMany: Sinon.stub().resolves(),
+            });
+
             Sinon.stub(prisma, 'serviceProvider').value({
                 update: Sinon.stub().resolves({
                     id: serviceProviderMock.id,
