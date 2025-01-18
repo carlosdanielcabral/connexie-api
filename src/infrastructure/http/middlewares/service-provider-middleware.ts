@@ -6,6 +6,10 @@ import { randomUUID } from "crypto";
 import { ListServiceProviderFilter } from "../../../interfaces/repositories/service-provider-repository";
 import RegisterServiceProviderAddressDTO from "../../../application/dtos/service-provider/register-service-provider-address";
 import { JobMode } from "../../../domain/entities/service-provider";
+import UpdateServiceProviderAddressDTO from "../../../application/dtos/service-provider/update-service-provider-address";
+import UpdateServiceProviderContactDTO from "../../../application/dtos/service-provider/update-service-provider-contact";
+import UpdateServiceProviderDTO from "../../../application/dtos/service-provider/update-service-provider";
+import ServiceProviderContact from "../../../domain/entities/service-provider-contact";
 
 class ServiceProviderMiddleware {
   public create = (req: Request, res: Response, next: NextFunction) => {
@@ -113,6 +117,50 @@ class ServiceProviderMiddleware {
     }
 
     req.body = { filter };
+
+    return next();
+  }
+
+  public update = (req: Request, res: Response, next: NextFunction) => {
+    z.object({
+      name: z.string().optional(),
+      password: z.string().min(8).optional(),
+      contacts: z.array(z.object({
+        email: z.string().email(),
+        phone: z.string(),
+        cellphone: z.string(),
+      })).optional(),
+      description: z.string().optional(),
+      profileImage: z.string().optional(),
+      jobMode: z.enum(['remote', 'onsite', 'both']).optional(),
+      jobAreaId: z.number().int().optional(),
+      address: z.object({
+        cep: z.string().length(8),
+        city: z.string(),
+        state: z.string(),
+        uf: z.string().length(2),
+      }).optional(),
+    }).parse(req.body);
+
+    req.body.dto = new UpdateServiceProviderDTO(
+      req.body.name,
+      req.body.contacts ? req.body.contacts.map((contact: ServiceProviderContact) => new UpdateServiceProviderContactDTO(
+        contact.email,
+        contact.phone,
+        contact.cellphone
+      )) : [],
+      req.body.description,
+      req.body.jobMode,
+      req.body.jobAreaId,
+      req.body.profileImage,
+      req.body.address ? new UpdateServiceProviderAddressDTO(
+        req.body.address.cep,
+        req.body.address.city,
+        req.body.address.state,
+        req.body.address.uf,
+      ) : undefined,
+      req.body.password,
+    );
 
     return next();
   }

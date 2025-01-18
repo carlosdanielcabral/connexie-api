@@ -6,6 +6,8 @@ interface ServiceProviderRepository {
     findByEmail(email: string): Promise<ServiceProvider | null>;
     list(filter?: ListServiceProviderFilter): Promise<ServiceProvider[]>;
     count(): Promise<number>;
+    update(serviceProvider: ServiceProvider): Promise<ServiceProvider>;
+    findById(id: string): Promise<ServiceProvider | null>;
 }
 
 export type ListServiceProviderFilter = Pagination & {
