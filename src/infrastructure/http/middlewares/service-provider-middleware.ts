@@ -9,6 +9,7 @@ import { JobMode } from "../../../domain/entities/service-provider";
 import UpdateServiceProviderAddressDTO from "../../../application/dtos/service-provider/update-service-provider-address";
 import UpdateServiceProviderContactDTO from "../../../application/dtos/service-provider/update-service-provider-contact";
 import UpdateServiceProviderDTO from "../../../application/dtos/service-provider/update-service-provider";
+import ServiceProviderContact from "../../../domain/entities/service-provider-contact";
 
 class ServiceProviderMiddleware {
   public create = (req: Request, res: Response, next: NextFunction) => {
@@ -143,7 +144,7 @@ class ServiceProviderMiddleware {
 
     req.body.dto = new UpdateServiceProviderDTO(
       req.body.name,
-      req.body.contacts ? req.body.contacts.map((contact: any) => new UpdateServiceProviderContactDTO(
+      req.body.contacts ? req.body.contacts.map((contact: ServiceProviderContact) => new UpdateServiceProviderContactDTO(
         contact.email,
         contact.phone,
         contact.cellphone
