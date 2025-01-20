@@ -1,8 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import File from '../../../domain/entities/file';
 import Customer from '../../../domain/entities/customer';
+import ICustomerRepository from '../../../interfaces/repositories/customer-repository';
 
-class CustomerRepository {
+class CustomerRepository implements ICustomerRepository{
   constructor(private prisma: PrismaClient = new PrismaClient()) { }
 
   public create = async (customer: Customer): Promise<Customer> => {
