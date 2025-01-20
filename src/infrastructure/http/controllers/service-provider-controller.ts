@@ -62,7 +62,7 @@ class ServiceProviderController {
         const providers = await useCase.execute(filter);
         const total = await countUseCase.execute();
 
-        return res.status(HttpStatusCode.Ok).json({ total, providers: providers.map((provider) => provider.toJson()) });
+        return res.status(HttpStatusCode.Ok).json({ total, providers: providers.map((provider) => provider.toPublicJson()) });
     }
 
     public update = async (req: Request, res: Response) => {

@@ -74,6 +74,17 @@ class ServiceProvider {
       address: this.addresses.map(address => address.toJson()),
       jobArea: this.jobArea.toJson(),
     })
+
+    public toPublicJson = () => ({
+      id: this.id,
+      name: this.name,
+      contact: this.contacts.map(contact => contact.toJson()),
+      description: this.description,
+      image: this.profileImage?.decryptedUrl,
+      jobMode: this.jobMode,
+      address: this.addresses.map(address => address.toJson()),
+      jobArea: this.jobArea.toJson(),
+    })
   }
   
 export default ServiceProvider;
