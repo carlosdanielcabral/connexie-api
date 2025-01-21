@@ -5,6 +5,7 @@ import HttpStatusCode from '../status-code';
 import ValidationError from '../../../application/errors/validation-error';
 import ExternalServiceError from '../../../application/errors/external-service-error';
 import AuthenticationError from '../../../application/errors/authentication-error';
+import NotFoundError from '../../../application/errors/not-found-error';
 
 export interface ErrorHandler extends Error {
   status?: number;
@@ -20,6 +21,9 @@ const ErrorMiddleware = (err: ErrorHandler, _req: Request, res: Response, _next:
 
   if (err instanceof ValidationError)
     return res.status(HttpStatusCode.BadRequest).json({ message: err.message });
+
+  if (err instanceof NotFoundError)
+    return res.status(HttpStatusCode.NotFound).json({ message: err.message });
 
   console.error(err);
 
