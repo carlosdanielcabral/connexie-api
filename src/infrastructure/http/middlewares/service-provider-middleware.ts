@@ -59,15 +59,6 @@ class ServiceProviderMiddleware {
     return next();
   }
 
-  public login = (req: Request, res: Response, next: NextFunction) => {
-    z.object({
-      email: z.string().email(),
-      password: z.string(),
-    }).parse(req.body);
-
-    return next();
-  }
-
   public list = (req: Request, res: Response, next: NextFunction) => {
     z.object({
       keyword: z.string().optional(),

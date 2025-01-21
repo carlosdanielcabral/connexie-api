@@ -3,7 +3,6 @@ import RegisterServiceProvider from "../../../application/use-cases/service-prov
 import RegisterServiceProviderDTO from "../../../application/dtos/service-provider/register-service-provider";
 import HttpStatusCode from "../status-code";
 import ServiceProviderRepository from "../../database/repositories/service-provider-repository";
-import LoginServiceProvider from "../../../application/use-cases/service-provider/login-service-provider";
 import IFileRepository from "../../../interfaces/repositories/file-repository";
 import FileRepository from "../../database/repositories/file-repository";
 import ITokenService from "../../../interfaces/services/token-service";
@@ -40,17 +39,6 @@ class ServiceProviderController {
             .status(HttpStatusCode.Created)
             .location(`/service-provider/${provider.id}`)
             .json(provider.toJson())
-    }
-
-    public login = async (req: Request, res: Response) => {
-        const { email, password } = req.body;
-
-        const useCase = new LoginServiceProvider(this._repository, this._hashService);
-        const provider = (await useCase.execute(email, password)).toJson();
-
-        const token = this._tokenService.generate(provider);
-
-        return res.status(HttpStatusCode.Ok).json({ token, provider });
     }
 
     public list = async (req: Request, res: Response) => {
