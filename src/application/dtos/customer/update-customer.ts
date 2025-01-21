@@ -1,5 +1,3 @@
-import { randomUUID } from 'crypto';
-
 class UpdateCustomerDTO {
   constructor(
     public name: string,

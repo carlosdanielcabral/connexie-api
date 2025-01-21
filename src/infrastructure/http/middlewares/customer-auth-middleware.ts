@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import ITokenService from '../../../interfaces/services/token-service';
 import TokenService from '../../services/token-service';
 import AuthenticationError from '../../../application/errors/authentication-error';
-import ServiceProviderRepository from '../../database/repositories/service-provider-repository';
 import ICustomerRepository from '../../../interfaces/repositories/customer-repository';
 import CustomerRepository from '../../database/repositories/customer-repository';
 

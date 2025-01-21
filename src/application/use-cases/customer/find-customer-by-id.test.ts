@@ -1,7 +1,6 @@
 
 import { PrismaClient } from "@prisma/client";
 import Sinon from "sinon";
-import HashService from "../../../infrastructure/services/hash-service";
 import File from "../../../domain/entities/file";
 import Customer from "../../../domain/entities/customer";
 import CustomerRepository from "../../../infrastructure/database/repositories/customer-repository";
