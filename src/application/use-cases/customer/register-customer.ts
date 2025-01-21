@@ -7,7 +7,7 @@ import Customer from '../../../domain/entities/customer';
 
 class RegisterCustomer {
   constructor(
-    private _customRepository: ICustomerRepository,
+    private _customerRepository: ICustomerRepository,
     private _hashService: HashService,
     private _findFileById: FindFileById,
   ) {}
@@ -15,7 +15,7 @@ class RegisterCustomer {
   public execute = async (dto: RegisterCustomerDTO): Promise<Customer> => {
     const { id, name, email, password, profileImage } = dto;
 
-    const previousCustomer = await this._customRepository.findByEmail(email);
+    const previousCustomer = await this._customerRepository.findByEmail(email);
 
     if (previousCustomer) throw new ValidationError('This email is already in use');
 
@@ -33,7 +33,7 @@ class RegisterCustomer {
       file,
     );
 
-    return this._customRepository.create(customer);
+    return this._customerRepository.create(customer);
   };
 }
 
