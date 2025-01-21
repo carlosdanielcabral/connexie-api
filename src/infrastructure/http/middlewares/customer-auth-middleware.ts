@@ -2,13 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import ITokenService from '../../../interfaces/services/token-service';
 import TokenService from '../../services/token-service';
 import AuthenticationError from '../../../application/errors/authentication-error';
-import ServiceProviderRepository from '../../database/repositories/service-provider-repository';
-import IServiceProviderRepository from '../../../interfaces/repositories/service-provider-repository';
+import ICustomerRepository from '../../../interfaces/repositories/customer-repository';
+import CustomerRepository from '../../database/repositories/customer-repository';
 
-class AuthMiddleware {
+class CustomerAuthMiddleware {
   public constructor(
     private _token: ITokenService = new TokenService(),
-    private _serviceProviderRepository: IServiceProviderRepository = new ServiceProviderRepository(),
+    private _customerRepository: ICustomerRepository = new CustomerRepository(),
   ) {}
 
   public validate = async (request: Request, response: Response, next: NextFunction) => {
@@ -18,7 +18,7 @@ class AuthMiddleware {
 
     const { id } = this._token.validate(request.headers.authorization);
 
-    const user = await this._serviceProviderRepository.findById(id);
+    const user = await this._customerRepository.findById(id);
 
     if (user === null) {
       throw new AuthenticationError('Invalid autorization');
@@ -30,4 +30,4 @@ class AuthMiddleware {
   };
 }
 
-export default AuthMiddleware;
+export default CustomerAuthMiddleware;

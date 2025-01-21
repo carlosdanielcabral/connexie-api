@@ -59,15 +59,6 @@ class ServiceProviderMiddleware {
     return next();
   }
 
-  public login = (req: Request, res: Response, next: NextFunction) => {
-    z.object({
-      email: z.string().email(),
-      password: z.string(),
-    }).parse(req.body);
-
-    return next();
-  }
-
   public list = (req: Request, res: Response, next: NextFunction) => {
     z.object({
       keyword: z.string().optional(),
@@ -134,13 +125,18 @@ class ServiceProviderMiddleware {
       profileImage: z.string().optional(),
       jobMode: z.enum(['remote', 'onsite', 'both']).optional(),
       jobAreaId: z.number().int().optional(),
-      address: z.object({
-        cep: z.string().length(8),
-        city: z.string(),
-        state: z.string(),
-        uf: z.string().length(2),
-      }).optional(),
     }).parse(req.body);
+
+    if (req.body.jobMode !== JobMode.REMOTE) {
+      z.object({
+        address: z.object({
+          cep: z.string().length(8),
+          city: z.string(),
+          state: z.string(),
+          uf: z.string().length(2),
+        }),
+      }).parse(req.body);
+    }
 
     req.body.dto = new UpdateServiceProviderDTO(
       req.body.name,
