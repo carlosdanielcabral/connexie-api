@@ -15,6 +15,7 @@ class CustomerRoute implements Route {
     public register = (app: Express) => {
         app.post('/customer', this._middleware.create, this._controller.create);
         app.get('/customer', this._auth.validate, this._controller.findById);
+        app.put('/customer', this._auth.validate, this._middleware.update, this._controller.update);
     }
 }
 

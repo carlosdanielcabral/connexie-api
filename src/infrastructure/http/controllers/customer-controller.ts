@@ -13,6 +13,7 @@ import RegisterCustomerDTO from "../../../application/dtos/customer/register-cus
 import RegisterCustomer from "../../../application/use-cases/customer/register-customer";
 import FindCustomerById from "../../../application/use-cases/customer/find-customer-by-id";
 import NotFoundError from "../../../application/errors/not-found-error";
+import UpdateCustomer from "../../../application/use-cases/customer/update-customer";
 
 class CustomerController {
     constructor(
@@ -46,6 +47,17 @@ class CustomerController {
         if (!customer) {
             throw new NotFoundError('Customer not found');
         }
+
+        return res.status(HttpStatusCode.Ok).json({ customer: customer.toJson() });
+    }
+
+    public update = async (req: Request, res: Response) => {
+        const { dto, user } = req.body;
+
+        const findFileById = new FindFileById(this._fileRepository);
+    
+        const useCase = new UpdateCustomer(this._repository, this._hashService, findFileById);
+        const customer = await useCase.execute(dto, user);
 
         return res.status(HttpStatusCode.Ok).json({ customer: customer.toJson() });
     }
