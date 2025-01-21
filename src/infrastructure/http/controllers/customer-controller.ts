@@ -11,6 +11,8 @@ import ICustomerRepository from "../../../interfaces/repositories/customer-repos
 import CustomerRepository from "../../database/repositories/customer-repository";
 import RegisterCustomerDTO from "../../../application/dtos/customer/register-customer";
 import RegisterCustomer from "../../../application/use-cases/customer/register-customer";
+import FindCustomerById from "../../../application/use-cases/customer/find-customer-by-id";
+import NotFoundError from "../../../application/errors/not-found-error";
 
 class CustomerController {
     constructor(
@@ -32,6 +34,20 @@ class CustomerController {
             .status(HttpStatusCode.Created)
             .location(`/customer/${customer.id}`)
             .json(customer.toJson())
+    }
+
+    public findById = async (req: Request, res: Response) => {
+        const { id } = req.body.user;
+
+        const useCase = new FindCustomerById(this._repository);
+
+        const customer = await useCase.execute(id);
+
+        if (!customer) {
+            throw new NotFoundError('Customer not found');
+        }
+
+        return res.status(HttpStatusCode.Ok).json({ customer: customer.toJson() });
     }
 }
 
