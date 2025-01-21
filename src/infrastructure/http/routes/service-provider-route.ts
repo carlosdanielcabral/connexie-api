@@ -2,13 +2,13 @@ import { Express } from 'express';
 import Route from '../../../interfaces/routes/route';
 import ServiceProviderController from '../controllers/service-provider-controller';
 import ServiceProviderMiddleware from '../middlewares/service-provider-middleware';
-import AuthMiddleware from '../middlewares/auth-middleware';
+import ServiceProviderAuthMiddleware from '../middlewares/service-provider-auth-middleware';
 
 class ServiceProviderRoute implements Route {
     constructor(
         private readonly _controller: ServiceProviderController = new ServiceProviderController(),
         private readonly _middleware: ServiceProviderMiddleware = new ServiceProviderMiddleware(),
-        private readonly _auth: AuthMiddleware = new AuthMiddleware(),
+        private readonly _auth: ServiceProviderAuthMiddleware = new ServiceProviderAuthMiddleware(),
     ) {
     }
 
