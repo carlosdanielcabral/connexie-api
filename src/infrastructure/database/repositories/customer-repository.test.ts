@@ -20,7 +20,7 @@ describe("[Repository] Customer", () => {
 
     describe("01. Create", () => {
         test("Return customer after success insertion", async () => {
-            Sinon.stub(prisma, 'customer').value({
+            Sinon.stub(prisma, 'user').value({
                 create: Sinon.stub().resolves({
                     id: customerMock.id,
                     name: customerMock.name,
@@ -52,8 +52,8 @@ describe("[Repository] Customer", () => {
             Sinon.stub(prisma, 'customer').restore();
         });
 
-        test("Return null if customer not found", async () => {           
-            Sinon.stub(prisma, 'customer').value({
+        test("Return null if customer not found", async () => {
+            Sinon.stub(prisma, 'user').value({
                 findUnique: Sinon.stub().resolves(null),
             });
 
@@ -65,7 +65,7 @@ describe("[Repository] Customer", () => {
         });
 
         test("Return customer after success search", async () => {
-            Sinon.stub(prisma, 'customer').value({
+            Sinon.stub(prisma, 'user').value({
                 findUnique: Sinon.stub().resolves({
                     id: customerMock.id,
                     name: customerMock.name,
@@ -94,22 +94,24 @@ describe("[Repository] Customer", () => {
 
     describe("03. Update", () => {
         test("Return customer after success update", async () => {
-            Sinon.stub(prisma, 'customer').value({
+            Sinon.stub(prisma, 'user').value({
                 update: Sinon.stub().resolves({
-                    id: customerMock.id,
-                    name: customerMock.name,
-                    email: customerMock.email,
-                    password: customerMock.password,
-                    profileImage: {
-                        originalName: 'original-name',
-                        encoding: 'encoding',
-                        mimeType: 'mimeType',
-                        blobName: 'blobName',
-                        originalSize: 1,
-                        url: 'url',
-                        compressedSize: 0,
-                        id: 'uuid',
-                    },
+                    user: {
+                        id: customerMock.id,
+                        name: customerMock.name,
+                        email: customerMock.email,
+                        password: customerMock.password,
+                        profileImage: {
+                            originalName: 'original-name',
+                            encoding: 'encoding',
+                            mimeType: 'mimeType',
+                            blobName: 'blobName',
+                            originalSize: 1,
+                            url: 'url',
+                            compressedSize: 0,
+                            id: 'uuid',
+                        },
+                    }
                 }),
             });
 
@@ -125,20 +127,22 @@ describe("[Repository] Customer", () => {
         test("Return customer after success search", async () => {
             Sinon.stub(prisma, 'customer').value({
                 findUnique: Sinon.stub().resolves({
-                    id: customerMock.id,
-                    name: customerMock.name,
-                    email: customerMock.email,
-                    password: customerMock.password,
-                    profileImage: {
-                        originalName: 'original-name',
-                        encoding: 'encoding',
-                        mimeType: 'mimeType',
-                        blobName: 'blobName',
-                        originalSize: 1,
-                        url: 'url',
-                        compressedSize: 0,
-                        id: 'uuid',
+                    user: {
+                        name: customerMock.name,
+                        email: customerMock.email,
+                        password: customerMock.password,
+                        profileImage: {
+                            originalName: 'original-name',
+                            encoding: 'encoding',
+                            mimeType: 'mimeType',
+                            blobName: 'blobName',
+                            originalSize: 1,
+                            url: 'url',
+                            compressedSize: 0,
+                            id: 'uuid',
+                        },
                     },
+                    id: customerMock.id,
                 }),
             });
 

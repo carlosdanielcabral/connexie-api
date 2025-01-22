@@ -27,22 +27,34 @@ model Address {
   @@map("address")
 }
 
-model ServiceProvider {
+model User {
   id             String   @id @db.Char(36)
+  type           UserType @map("type")
   name           String   @db.VarChar(255)
   email          String   @unique @db.VarChar(255)
-  description    String   @db.Text
   profileImageId String?  @map("profile_image_id") @db.Char(36)
   password       String   @db.VarChar(255)
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
-  jobMode        JobMode  @map("job_mode")
-  jobAreaId      Int      @map("job_area_id")
-  jobArea        JobArea  @relation(fields: [jobAreaId], references: [id])
 
-  contact      ServiceProviderContact[]
-  profileImage File?                    @relation(fields: [profileImageId], references: [id])
-  addresses    ServiceProviderAddress[]
+  profileImage    File?             @relation(fields: [profileImageId], references: [id])
+  serviceProvider ServiceProvider[]
+  customer        Customer[]
+
+  @@map("user")
+}
+
+model ServiceProvider {
+  id          String  @id @db.Char(36)
+  description String  @db.Text
+  jobMode     JobMode @map("job_mode")
+  jobAreaId   Int     @map("job_area_id")
+  jobArea     JobArea @relation(fields: [jobAreaId], references: [id])
+
+  contact   ServiceProviderContact[]
+  addresses ServiceProviderAddress[]
+
+  user   User    @relation(fields: [id], references: [id])
 
   @@map("service_provider")
 }
@@ -74,18 +86,17 @@ model ServiceProviderContact {
 }
 
 model File {
-  id              String            @id @db.Char(36)
-  originalName    String            @map("original_name") @db.VarChar(500)
-  encoding        String            @db.VarChar(36)
-  mimeType        String            @map("mime_type") @db.VarChar(255)
-  blobName        String            @map("blob_name") @db.VarChar(500)
-  originalSize    Int               @map("original_size")
-  compressedSize  Int               @map("compressed_size")
-  url             String            @db.VarChar(500)
-  createdAt       DateTime          @default(now()) @map("created_at")
-  updatedAt       DateTime          @updatedAt @map("updated_at")
-  ServiceProvider ServiceProvider[]
-  Customer        Customer[]
+  id             String   @id @db.Char(36)
+  originalName   String   @map("original_name") @db.VarChar(500)
+  encoding       String   @db.VarChar(36)
+  mimeType       String   @map("mime_type") @db.VarChar(255)
+  blobName       String   @map("blob_name") @db.VarChar(500)
+  originalSize   Int      @map("original_size")
+  compressedSize Int      @map("compressed_size")
+  url            String   @db.VarChar(500)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  User           User[]
 
   @@map("file")
 }
@@ -93,7 +104,7 @@ model File {
 model JobArea {
   id              Int               @id @default(autoincrement())
   title           String            @unique
-  ServiceProvider ServiceProvider[]
+  serviceProvider ServiceProvider[]
 
   @@map("job_area")
 }
@@ -104,15 +115,15 @@ enum JobMode {
   both   @map("both")
 }
 
+enum UserType {
+  serviceProvider @map("1")
+  customer        @map("2")
+}
+
 model Customer {
-  id             String   @id @default(uuid()) @db.Char(36)
-  name           String   @db.VarChar(255)
-  email          String   @unique @db.VarChar(255)
-  password       String   @db.VarChar(255)
-  profileImageId String?  @map("profile_image_id") @db.Char(36)
-  profileImage   File?    @relation(fields: [profileImageId], references: [id])
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+  id String @id @default(uuid()) @db.Char(36)
+
+  user User @relation(fields: [id], references: [id])
 
   @@map("customer")
 }

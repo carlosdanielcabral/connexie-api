@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, UserType } from '@prisma/client';
 import ServiceProvider, { JobMode } from '../../../domain/entities/service-provider';
 import IServiceProviderRepository, { ListServiceProviderFilter } from '../../../interfaces/repositories/service-provider-repository';
 import ServiceProviderContact from '../../../domain/entities/service-provider-contact';
@@ -14,44 +14,46 @@ class ServiceProviderRepository implements IServiceProviderRepository {
     const contacts = serviceProvider.contacts.map((contact) => contact.toJson());
     const addresses = serviceProvider.addresses.map((address) => address.toJson());
 
-    await this.prisma.serviceProvider.create({
-      include: {
-        contact: true,
-        addresses: true,
-      },
+    await this.prisma.user.create({
       data: {
         id: serviceProvider.id,
+        type: UserType.serviceProvider,
         name: serviceProvider.name,
         email: serviceProvider.email,
         password: serviceProvider.password,
-        contact: {
-          create: contacts,
+        serviceProvider: {
+          create: {
+            contact: {
+              create: contacts,
+            },
+            description: serviceProvider.description,
+            jobMode: serviceProvider.jobMode,
+            addresses: {
+              create: addresses.map((address) => ({
+                address: {
+                  connectOrCreate: {
+                    where: { cep_city_state_uf: { cep: address.cep, city: address.city, state: address.state, uf: address.uf } },
+                    create: {
+                      cep: address.cep,
+                      city: address.city,
+                      state: address.state,
+                      uf: address.uf,
+                    }
+                  },
+                }
+              }))
+            },
+            jobArea: {
+              connect: {
+                id: serviceProvider.jobArea.id,
+              },
+            },
+
+          }
         },
-        description: serviceProvider.description,
         profileImage: {
           connect: {
             id: serviceProvider.profileImage?.id,
-          },
-        },
-        jobMode: serviceProvider.jobMode,
-        addresses: {
-          create: addresses.map((address) => ({
-            address: {
-              connectOrCreate: {
-                where: { cep_city_state_uf: { cep: address.cep, city: address.city, state: address.state, uf: address.uf } },
-                create: {
-                  cep: address.cep,
-                  city: address.city,
-                  state: address.state,
-                  uf: address.uf,
-                }
-              },
-            }
-          }))
-        },
-        jobArea: {
-          connect: {
-            id: serviceProvider.jobArea.id,
           },
         },
       },
@@ -61,45 +63,49 @@ class ServiceProviderRepository implements IServiceProviderRepository {
   }
 
   public findByEmail = async (email: string): Promise<ServiceProvider | null> => {
-    const serviceProvider = await this.prisma.serviceProvider.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { email },
       include: {
-        contact: true,
-        profileImage: true,
-        addresses: {
-          include: { address: true }
+        serviceProvider: {
+          include: {
+            contact: true,
+            addresses: {
+              include: { address: true }
+            },
+            jobArea: true
+          }
         },
-        jobArea: true
+        profileImage: true,
       },
     });
 
-    if (!serviceProvider) return null;
+    if (!user) return null;
 
     return new ServiceProvider(
-      serviceProvider.id,
-      serviceProvider.name,
-      serviceProvider.email,
-      serviceProvider.password,
-      serviceProvider.contact.map((contact) => new ServiceProviderContact(
+      user.id,
+      user.name,
+      user.email,
+      user.password,
+      user.serviceProvider[0].contact.map((contact) => new ServiceProviderContact(
         contact.email,
         contact.phone,
         contact.cellphone,
         contact.id,
       )),
-      serviceProvider.description,
-      !serviceProvider.profileImage ? null : new File(
-        serviceProvider.profileImage.originalName,
-        serviceProvider.profileImage.encoding,
-        serviceProvider.profileImage.mimeType,
-        serviceProvider.profileImage.blobName,
-        serviceProvider.profileImage.originalSize,
-        serviceProvider.profileImage.compressedSize,
-        serviceProvider.profileImage.url,
-        serviceProvider.profileImage.id,
+      user.serviceProvider[0].description,
+      !user.profileImage ? null : new File(
+        user.profileImage.originalName,
+        user.profileImage.encoding,
+        user.profileImage.mimeType,
+        user.profileImage.blobName,
+        user.profileImage.originalSize,
+        user.profileImage.compressedSize,
+        user.profileImage.url,
+        user.profileImage.id,
       ),
-      serviceProvider.jobMode as JobMode,
-      serviceProvider.addresses.map(({ address }) => new Address(address.cep, address.city, address.state, address.uf, address.id)),
-      new JobArea(serviceProvider.jobArea.title, serviceProvider.jobArea.id),
+      user.serviceProvider[0].jobMode as JobMode,
+      user.serviceProvider[0].addresses.map(({ address }) => new Address(address.cep, address.city, address.state, address.uf, address.id)),
+      new JobArea(user.serviceProvider[0].jobArea.title, user.serviceProvider[0].jobArea.id),
     );
   }
 
@@ -149,8 +155,12 @@ class ServiceProviderRepository implements IServiceProviderRepository {
 
     const serviceProviders = await this.prisma.serviceProvider.findMany({
       include: {
+        user: {
+          include: {
+            profileImage: true,
+          },
+        },
         contact: true,
-        profileImage: true,
         addresses: {
           include: { address: true }
         },
@@ -161,9 +171,9 @@ class ServiceProviderRepository implements IServiceProviderRepository {
 
     return serviceProviders.map((serviceProvider) => new ServiceProvider(
       serviceProvider.id,
-      serviceProvider.name,
-      serviceProvider.email,
-      serviceProvider.password,
+      serviceProvider.user.name,
+      serviceProvider.user.email,
+      serviceProvider.user.password,
       serviceProvider.contact.map((contact) => new ServiceProviderContact(
         contact.email,
         contact.phone,
@@ -171,15 +181,15 @@ class ServiceProviderRepository implements IServiceProviderRepository {
         contact.id,
       )),
       serviceProvider.description,
-      !serviceProvider.profileImage ? null : new File(
-        serviceProvider.profileImage.originalName,
-        serviceProvider.profileImage.encoding,
-        serviceProvider.profileImage.mimeType,
-        serviceProvider.profileImage.blobName,
-        serviceProvider.profileImage.originalSize,
-        serviceProvider.profileImage.compressedSize,
-        serviceProvider.profileImage.url,
-        serviceProvider.profileImage.id,
+      !serviceProvider.user.profileImage ? null : new File(
+        serviceProvider.user.profileImage.originalName,
+        serviceProvider.user.profileImage.encoding,
+        serviceProvider.user.profileImage.mimeType,
+        serviceProvider.user.profileImage.blobName,
+        serviceProvider.user.profileImage.originalSize,
+        serviceProvider.user.profileImage.compressedSize,
+        serviceProvider.user.profileImage.url,
+        serviceProvider.user.profileImage.id,
       ),
       serviceProvider.jobMode as JobMode,
       serviceProvider.addresses.map(({ address }) => new Address(address.cep, address.city, address.state, address.uf, address.id)),
@@ -208,50 +218,50 @@ class ServiceProviderRepository implements IServiceProviderRepository {
     });
 
     // update the data with the new relations
-    await this.prisma.serviceProvider.update({
+    await this.prisma.user.update({
       where: { id: serviceProvider.id },
-      include: {
-        contact: true,
-        addresses: {
-          include: {
-            address: true,
-          },
-        },
-      },
       data: {
         name: serviceProvider.name,
         email: serviceProvider.email,
         password: serviceProvider.password,
-        contact: {
-          create: contacts,
-        },
-        description: serviceProvider.description,
         profileImage: {
           connect: {
             id: serviceProvider.profileImage?.id,
           },
         },
-        jobMode: serviceProvider.jobMode,
-        addresses: {
-          create: addresses.map((address) => ({
-            address: {
-              connectOrCreate: {
-                where: { cep_city_state_uf: { cep: address.cep, city: address.city, state: address.state, uf: address.uf } },
-                create: {
-                  cep: address.cep,
-                  city: address.city,
-                  state: address.state,
-                  uf: address.uf,
-                }
+        serviceProvider: {
+          update: {
+            where: { id: serviceProvider.id },
+            data: {
+              contact: {
+                create: contacts,
               },
-            }
-          }))
-        },
-        jobArea: {
-          connect: {
-            id: serviceProvider.jobArea.id,
-          },
-        },
+              description: serviceProvider.description,
+      
+              jobMode: serviceProvider.jobMode,
+              addresses: {
+                create: addresses.map((address) => ({
+                  address: {
+                    connectOrCreate: {
+                      where: { cep_city_state_uf: { cep: address.cep, city: address.city, state: address.state, uf: address.uf } },
+                      create: {
+                        cep: address.cep,
+                        city: address.city,
+                        state: address.state,
+                        uf: address.uf,
+                      }
+                    },
+                  }
+                }))
+              },
+              jobArea: {
+                connect: {
+                  id: serviceProvider.jobArea.id,
+                },
+              },
+            },
+          }
+        }
       },
     });
 
@@ -263,7 +273,11 @@ class ServiceProviderRepository implements IServiceProviderRepository {
       where: { id },
       include: {
         contact: true,
-        profileImage: true,
+        user: {
+          include: {
+            profileImage: true,
+          },
+        },
         addresses: {
           include: { address: true }
         },
@@ -275,9 +289,9 @@ class ServiceProviderRepository implements IServiceProviderRepository {
 
     return new ServiceProvider(
       serviceProvider.id,
-      serviceProvider.name,
-      serviceProvider.email,
-      serviceProvider.password,
+      serviceProvider.user.name,
+      serviceProvider.user.email,
+      serviceProvider.user.password,
       serviceProvider.contact.map((contact) => new ServiceProviderContact(
         contact.email,
         contact.phone,
@@ -285,15 +299,15 @@ class ServiceProviderRepository implements IServiceProviderRepository {
         contact.id,
       )),
       serviceProvider.description,
-      !serviceProvider.profileImage ? null : new File(
-        serviceProvider.profileImage.originalName,
-        serviceProvider.profileImage.encoding,
-        serviceProvider.profileImage.mimeType,
-        serviceProvider.profileImage.blobName,
-        serviceProvider.profileImage.originalSize,
-        serviceProvider.profileImage.compressedSize,
-        serviceProvider.profileImage.url,
-        serviceProvider.profileImage.id,
+      !serviceProvider.user.profileImage ? null : new File(
+        serviceProvider.user.profileImage.originalName,
+        serviceProvider.user.profileImage.encoding,
+        serviceProvider.user.profileImage.mimeType,
+        serviceProvider.user.profileImage.blobName,
+        serviceProvider.user.profileImage.originalSize,
+        serviceProvider.user.profileImage.compressedSize,
+        serviceProvider.user.profileImage.url,
+        serviceProvider.user.profileImage.id,
       ),
       serviceProvider.jobMode as JobMode,
       serviceProvider.addresses.map(({ address }) => new Address(address.cep, address.city, address.state, address.uf, address.id)),
