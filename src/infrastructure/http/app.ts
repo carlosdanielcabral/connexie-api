@@ -2,6 +2,7 @@ import express, { Express, json } from 'express';
 import cors from 'cors';
 import Router from './router';
 import error from './middlewares/error';
+import { rateLimit } from 'express-rate-limit';
 
 class App {
     constructor(
@@ -16,6 +17,14 @@ class App {
     }
 
     private config = () => {
+        const rateLimiter = rateLimit({
+            windowMs: 60 * 1000, 
+            limit: 100, 
+        	standardHeaders: true,
+	        legacyHeaders: false,
+        });
+
+        this._app.use(rateLimiter);
         this._app.use(json());
         this._app.use(cors());
         this._router.register(this._app);
