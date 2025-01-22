@@ -1,47 +1,16 @@
 import File from "./file";
+import User from "./user";
 
-class Customer {
-    constructor(
-      private _id: string,
-      private _name: string,
-      private _email: string,
-      private _password: string,
-      private _profileImage: File | null,
-    ) {
-    }
-
-    public get id(): string {
-      return this._id;
-    }
-
-    public get name(): string {
-      return this._name;
-    }
-
-    public get email(): string {
-      return this._email;
-    }
-
-    public get password(): string {
-      return this._password;
-    }
-
-    public get profileImage(): File | null {
-      return this._profileImage;
-    }
-
-    public toJson = () => ({
-      id: this.id,
-      name: this.name,
-      email: this.email,
-      image: this.profileImage?.decryptedUrl,
-    })
-
-    public toPublicJson = () => ({
-      id: this.id,
-      name: this.name,
-      image: this.profileImage?.decryptedUrl,
-    })
+class Customer extends User {
+  constructor(
+    id: string,
+    name: string,
+    email: string,
+    password: string,
+    profileImage: File | null,
+  ) {
+    super(id, name, email, password, profileImage);
   }
-  
+}
+
 export default Customer;

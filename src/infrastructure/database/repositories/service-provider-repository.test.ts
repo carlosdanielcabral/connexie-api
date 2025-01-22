@@ -29,7 +29,7 @@ describe("[Repository] Service Provider", () => {
 
     describe("01. Create", () => {
         test("Return service provider after success insertion", async () => {
-            Sinon.stub(prisma, 'serviceProvider').value({
+            Sinon.stub(prisma, 'user').value({
                 create: Sinon.stub().resolves({
                     id: serviceProviderMock.id,
                     name: serviceProviderMock.name,
@@ -85,8 +85,8 @@ describe("[Repository] Service Provider", () => {
             Sinon.stub(prisma, 'serviceProvider').restore();
         });
 
-        test("Return null if service provider not found", async () => {           
-            Sinon.stub(prisma, 'serviceProvider').value({
+        test("Return null if service provider not found", async () => {
+            Sinon.stub(prisma, 'user').value({
                 findUnique: Sinon.stub().resolves(null),
             });
 
@@ -98,20 +98,11 @@ describe("[Repository] Service Provider", () => {
         });
 
         test("Return service provider after success search", async () => {
-            Sinon.stub(prisma, 'serviceProvider').value({
+            Sinon.stub(prisma, 'user').value({
                 findUnique: Sinon.stub().resolves({
-                    id: serviceProviderMock.id,
                     name: serviceProviderMock.name,
                     email: serviceProviderMock.email,
                     password: serviceProviderMock.password,
-                    contact: [
-                        {
-                            email: serviceProviderMock.contacts[0].email,
-                            phone: serviceProviderMock.contacts[0].phone,
-                            cellphone: serviceProviderMock.contacts[0].cellphone,
-                        },
-                    ],
-                    description: serviceProviderMock.description,
                     profileImage: {
                         originalName: 'original-name',
                         encoding: 'encoding',
@@ -122,22 +113,33 @@ describe("[Repository] Service Provider", () => {
                         compressedSize: 0,
                         id: 'uuid',
                     },
-                    jobMode: serviceProviderMock.jobMode,
-                    addresses: [
-                        {
-                            address: {
-                                cep: 'cep',
-                                city: 'city',
-                                state: 'state',
-                                uf: 'uf',
-                                id: 1,
-                            }
+                    id: serviceProviderMock.id,
+                    serviceProvider: [{
+                        contact: [
+                            {
+                                email: serviceProviderMock.contacts[0].email,
+                                phone: serviceProviderMock.contacts[0].phone,
+                                cellphone: serviceProviderMock.contacts[0].cellphone,
+                            },
+                        ],
+                        description: serviceProviderMock.description,
+                        jobMode: serviceProviderMock.jobMode,
+                        addresses: [
+                            {
+                                address: {
+                                    cep: 'cep',
+                                    city: 'city',
+                                    state: 'state',
+                                    uf: 'uf',
+                                    id: 1,
+                                }
+                            },
+                        ],
+                        jobArea: {
+                            title: 'Test Job Area',
+                            id: 1,
                         },
-                    ],
-                    jobArea: {
-                        title: 'Test Job Area',
-                        id: 1,
-                    },
+                    }]
                 }),
             });
 
@@ -154,10 +156,22 @@ describe("[Repository] Service Provider", () => {
             Sinon.stub(prisma, 'serviceProvider').value({
                 findMany: Sinon.stub().resolves([
                     {
+                        user: {
+                            name: serviceProviderMock.name,
+                            email: serviceProviderMock.email,
+                            password: serviceProviderMock.password,
+                            profileImage: {
+                                originalName: 'original-name',
+                                encoding: 'encoding',
+                                mimeType: 'mimeType',
+                                blobName: 'blobName',
+                                originalSize: 1,
+                                url: 'url',
+                                compressedSize: 0,
+                                id: 'uuid',
+                            },
+                        },
                         id: serviceProviderMock.id,
-                        name: serviceProviderMock.name,
-                        email: serviceProviderMock.email,
-                        password: serviceProviderMock.password,
                         contact: [
                             {
                                 email: serviceProviderMock.contacts[0].email,
@@ -166,16 +180,6 @@ describe("[Repository] Service Provider", () => {
                             },
                         ],
                         description: serviceProviderMock.description,
-                        profileImage: {
-                            originalName: 'original-name',
-                            encoding: 'encoding',
-                            mimeType: 'mimeType',
-                            blobName: 'blobName',
-                            originalSize: 1,
-                            url: 'url',
-                            compressedSize: 0,
-                            id: 'uuid',
-                        },
                         jobMode: serviceProviderMock.jobMode,
                         addresses: [
                             {
@@ -252,7 +256,7 @@ describe("[Repository] Service Provider", () => {
                 deleteMany: Sinon.stub().resolves(),
             });
 
-            Sinon.stub(prisma, 'serviceProvider').value({
+            Sinon.stub(prisma, 'user').value({
                 update: Sinon.stub().resolves({
                     id: serviceProviderMock.id,
                     name: serviceProviderMock.name,
@@ -307,10 +311,22 @@ describe("[Repository] Service Provider", () => {
         test("Return service provider after success search", async () => {
             Sinon.stub(prisma, 'serviceProvider').value({
                 findUnique: Sinon.stub().resolves({
+                    user: {
+                        name: serviceProviderMock.name,
+                        email: serviceProviderMock.email,
+                        password: serviceProviderMock.password,
+                        profileImage: {
+                            originalName: 'original-name',
+                            encoding: 'encoding',
+                            mimeType: 'mimeType',
+                            blobName: 'blobName',
+                            originalSize: 1,
+                            url: 'url',
+                            compressedSize: 0,
+                            id: 'uuid',
+                        },
+                    },
                     id: serviceProviderMock.id,
-                    name: serviceProviderMock.name,
-                    email: serviceProviderMock.email,
-                    password: serviceProviderMock.password,
                     contact: [
                         {
                             email: serviceProviderMock.contacts[0].email,
@@ -319,16 +335,6 @@ describe("[Repository] Service Provider", () => {
                         },
                     ],
                     description: serviceProviderMock.description,
-                    profileImage: {
-                        originalName: 'original-name',
-                        encoding: 'encoding',
-                        mimeType: 'mimeType',
-                        blobName: 'blobName',
-                        originalSize: 1,
-                        url: 'url',
-                        compressedSize: 0,
-                        id: 'uuid',
-                    },
                     jobMode: serviceProviderMock.jobMode,
                     addresses: [
                         {
