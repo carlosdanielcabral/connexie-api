@@ -37,9 +37,10 @@ model User {
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
 
-  profileImage    File?             @relation(fields: [profileImageId], references: [id])
-  serviceProvider ServiceProvider[]
-  customer        Customer[]
+  profileImage             File?                      @relation(fields: [profileImageId], references: [id])
+  serviceProvider          ServiceProvider[]
+  customer                 Customer[]
+  UserPasswordResetRequest UserPasswordResetRequest[]
 
   @@map("user")
 }
@@ -54,7 +55,7 @@ model ServiceProvider {
   contact   ServiceProviderContact[]
   addresses ServiceProviderAddress[]
 
-  user   User    @relation(fields: [id], references: [id])
+  user User @relation(fields: [id], references: [id])
 
   @@map("service_provider")
 }
@@ -126,4 +127,16 @@ model Customer {
   user User @relation(fields: [id], references: [id])
 
   @@map("customer")
+}
+
+model UserPasswordResetRequest {
+  id        Int      @id @default(autoincrement())
+  userId    String   @map("user_id") @db.Char(36)
+  token     String   @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  expiresAt DateTime @map("expires_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  usedAt     DateTime? @map("used_at")
+
+  user User @relation(fields: [userId], references: [id])
 }

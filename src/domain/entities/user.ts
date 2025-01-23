@@ -1,6 +1,6 @@
 import File from "./file";
 
-abstract class User {
+class User {
     constructor(
         private _id: string,
         private _name: string,
